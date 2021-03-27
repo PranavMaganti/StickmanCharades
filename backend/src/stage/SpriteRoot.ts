@@ -4,7 +4,7 @@ import { Point } from "./Point";
 
 export { SpriteRoot }
 
-class SpriteRoot implements SpriteNode {
+class SpriteRoot implements Point {
     private children: List<SpriteNode>;
 
     private rootX: number;
