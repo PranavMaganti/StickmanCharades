@@ -1,3 +1,9 @@
 .curr {
     color: blue;
+    text-align: right;
+}
+
+.input-fields {
+    display: flex;
+    flex-direction: column;
 }
