@@ -14,14 +14,17 @@ class ChatMessage {
   }
 }
 
-export default function ClientComponent() {
+export default function ClientComponent(props: {
+  socket: SocketIOClient.Socket;
+}) {
   const [chatMessage, setChatMessage] = useState("");
-  const socket = socketIOClient(ENDPOINT);
+
   const emptyChats: ChatMessage[] = [];
   const [chats, setChats] = useState(emptyChats);
 
   useEffect(() => {
-    socket.on("chat", (data: { id: string; message: string }) => {
+    props.socket.on("chat", (data: { id: string; message: string }) => {
+      console.log(data.message);
       setChats([...chats, new ChatMessage(data.id, data.message)]);
     });
   });
@@ -31,7 +34,9 @@ export default function ClientComponent() {
       <form className="chat-form">
         {chats.forEach((chatMsg: ChatMessage) => {
           <p
-            style={{ color: chatMsg.senderId == socket.id ? "blue" : "black" }}
+            style={{
+              color: chatMsg.senderId == props.socket.id ? "blue" : "black",
+            }}
           >
             {chatMsg.message}
           </p>;
@@ -47,8 +52,9 @@ export default function ClientComponent() {
         </label>
         <button
           className="chat-submit"
-          onClick={() => {
-            socket.emit("chat", chatMessage);
+          onClick={(e) => {
+            e.preventDefault();
+            props.socket.emit("chat", chatMessage);
             setChatMessage("");
           }}
         >
@@ -59,4 +65,9 @@ export default function ClientComponent() {
   );
 }
 
-ReactDOM.render(<ClientComponent />, document.getElementById("root"));
+const socketClient = socketIOClient(ENDPOINT);
+
+ReactDOM.render(
+  <ClientComponent socket={socketClient} />,
+  document.getElementById("root")
+);
