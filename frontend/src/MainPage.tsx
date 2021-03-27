@@ -1,11 +1,13 @@
 import React, { useState } from "react";
+import { useHistory } from "react-router-dom";
 import { Container, TextField, Button } from "@material-ui/core";
-import ReactDOM from "react-dom";
 import "./index.css";
+import socket from "./socket";
 
-export default function FrontPage() {
+export default function MainPage() {
   const [userName, setUserName] = useState("");
   const [roomCode, setRoomCode] = useState("");
+  const history = useHistory();
 
   return (
     <Container maxWidth="sm" style={{ textAlign: "center" }}>
@@ -26,7 +28,14 @@ export default function FrontPage() {
           onChange={(e) => setRoomCode(e.target.value)}
         />
 
-        <Button variant="contained" color="primary">
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => {
+            socket.connect();
+            history.push("/play");
+          }}
+        >
           Join Game
         </Button>
 
@@ -35,5 +44,3 @@ export default function FrontPage() {
     </Container>
   );
 }
-
-ReactDOM.render(<FrontPage />, document.getElementById("root"));

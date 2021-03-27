@@ -1,8 +1,6 @@
-import React, {useMemo, useEffect, useState } from "react";
-import io from "socket.io-client";
+import React, { useEffect, useState } from "react";
 import "./index.css";
-
-const ENDPOINT = "http://localhost:5000";
+import socket from "./socket";
 
 class ChatMessage {
   senderId: string;
@@ -14,11 +12,10 @@ class ChatMessage {
   }
 }
 
-export default function ChatComponen() {
+export default function ChatComponent() {
   const [chatMessage, setChatMessage] = useState("");
   const emptyChats: ChatMessage[] = [];
   const [chats, setChats] = useState(emptyChats);
-  const socket = useMemo(() => io.connect(ENDPOINT), []);
 
   useEffect(() => {
     socket.on("chat", (data: { id: string; message: string }) => {
