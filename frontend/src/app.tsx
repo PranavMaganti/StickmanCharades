@@ -2,6 +2,7 @@ import React from "react";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import ChatComponent from "./ChatComponent";
 import MainPage from "./MainPage";
+import StickmanComponent from "./StickmanComponent";
 
 export default function App() {
   return (
@@ -11,6 +12,9 @@ export default function App() {
       <Switch>
         <Route path="/play">
           <ChatComponent />
+        </Route>
+        <Route path="/stickman">
+          <StickmanComponent />
         </Route>
         <Route path="/">
           <MainPage />
