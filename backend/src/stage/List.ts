@@ -1,4 +1,4 @@
-export {}
+export { List }
 
 class List<T> {
     private contents: Array<T>;
