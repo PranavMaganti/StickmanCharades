@@ -19,12 +19,7 @@ class List<T> {
         return this.contents[index];
     }
 
-    removeByValue(target: T): void {
+    remove(target: T): void {
         this.contents = this.contents.filter(item => item !== target);
     }
-
-    removeByIndex(index: number): void {
-        this.removeByValue(this.get(index));
-    }
-
 }

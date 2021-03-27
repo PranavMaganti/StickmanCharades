@@ -1,5 +1,0 @@
-export { Sprite }
-
-class Sprite {
-
-}

@@ -1,15 +1,15 @@
 import { List } from "./List";
-import { Sprite } from "./Sprite";
+import { SpriteRoot } from "./SpriteRoot";
 export { Stage }
 
 class Stage {
-    private members: List<Sprite>;
+    private members: List<SpriteRoot>;
 
     constructor() {
-        this.members = new List<Sprite>();
+        this.members = new List<SpriteRoot>();
     }
 
-    addSprite(sprite: Sprite) {
+    addSprite(sprite: SpriteRoot) {
         this.members.add(sprite);
     }
 }
