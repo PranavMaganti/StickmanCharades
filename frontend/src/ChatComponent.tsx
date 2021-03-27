@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import "./index.css";
 import socket from "./socket";
 import User from "./User";
-
+import { TextField, Button } from "@material-ui/core";
 class ChatMessage {
   senderId: string;
   message: string;
@@ -20,7 +20,6 @@ export default function ChatComponent() {
 
   useEffect(() => {
     socket.on("chat", (data: { id: string; message: string }) => {
-      console.log(data.message);
       setChats([...chats, new ChatMessage(data.id, data.message)]);
     });
 
@@ -29,6 +28,12 @@ export default function ChatComponent() {
     };
   });
 
+  const submitGuess = (e: any) => {
+    e.preventDefault();
+    socket.emit("chat", chatMessage);
+    setChatMessage("");
+  };
+
   return (
     <div>
       <User />
@@ -36,25 +41,20 @@ export default function ChatComponent() {
       <User />
 
       <form className="chat-form">
-        <label className="chat-label">
-          Enter a message:
-          <input
-            type="text"
-            className="chat-input"
-            value={chatMessage}
-            onChange={(e) => setChatMessage(e.target.value)}
-          />
-        </label>
-        <button
-          className="chat-submit"
-          onClick={(e) => {
-            e.preventDefault();
-            socket.emit("chat", chatMessage);
-            setChatMessage("");
+        <TextField
+          className="chat-input"
+          label="Guess"
+          value={chatMessage}
+          onChange={(e) => setChatMessage(e.target.value)}
+          onKeyPress={(ev) => {
+            if (ev.key === "Enter") {
+              submitGuess(ev);
+            }
           }}
-        >
+        />
+        <Button className="chat-submit" onClick={(e) => submitGuess(e)}>
           Enter
-        </button>
+        </Button>
       </form>
       <div>
         {chats.map((value, index) => {
