@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from "react";
+import { useMemo } from "react";
 import ReactDOM from "react-dom";
-import { socket } from "./service/socket";
+import io from "socket.io-client";
+import "./index.css";
+
+const ENDPOINT = "http://localhost:5000";
 
 class ChatMessage {
   senderId: string;
@@ -14,29 +18,24 @@ class ChatMessage {
 
 export default function ClientComponent() {
   const [chatMessage, setChatMessage] = useState("");
-
   const emptyChats: ChatMessage[] = [];
   const [chats, setChats] = useState(emptyChats);
+  const socket = useMemo(() => io.connect(ENDPOINT), []);
 
   useEffect(() => {
     socket.on("chat", (data: { id: string; message: string }) => {
       console.log(data.message);
       setChats([...chats, new ChatMessage(data.id, data.message)]);
     });
+
+    return () => {
+      socket.off("chat");
+    };
   });
 
   return (
     <div>
       <form className="chat-form">
-        {chats.forEach((chatMsg: ChatMessage) => {
-          <p
-            style={{
-              color: chatMsg.senderId == socket.id ? "blue" : "black",
-            }}
-          >
-            {chatMsg.message}
-          </p>;
-        })}
         <label className="chat-label">
           Enter a message:
           <input
@@ -57,6 +56,18 @@ export default function ClientComponent() {
           Enter
         </button>
       </form>
+      <div>
+        {chats.map((value, index) => {
+          return (
+            <p
+              className={value.senderId == socket.id ? "curr" : "other"}
+              key={index}
+            >
+              {value.message}
+            </p>
+          );
+        })}
+      </div>
     </div>
   );
 }
