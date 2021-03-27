@@ -1,19 +1,17 @@
-import { List } from "./List"
-import { SpriteRoot } from "./SpriteRoot";
 import { Point } from "./Point"
 
 export { SpriteNode }
 
 class SpriteNode implements Point {
-    private children: List<SpriteNode>;
+    private children: SpriteNode[];
     private parent: Point;
 
     private angle: number;
     private length: number;
 
     constructor(parent: Point, angle: number, length: number) {
-        this.children = new List<SpriteNode>();
-        this.angle = angle;
+        this.children = [];
+        this.angle = angle % 360;
         this.length = length;
         this.parent = parent;
     }
@@ -26,19 +24,37 @@ class SpriteNode implements Point {
         return this.parent.getY() + Math.cos(this.angle * Math.PI / 180) * this.length;
     }
 
-    addChild(angle: number, length: number): void {
-        this.children.add(new SpriteNode(this, angle, length));
+    setAngle(angle: number) {
+        angle = angle % 360;
+        this.angle = angle;
+    }
+
+    adjustAngle(angleChange: number) {
+        this.setAngle(this.angle + angleChange);
+        this.children.forEach(element => {
+            
+        });
+    }
+
+    setLength(length: number) {
+        this.length = length;
+    }
+
+    addChild(angle: number, length: number): SpriteNode {
+        let newNode = new SpriteNode(this, angle, length);
+        this.children.push(newNode);
+        return newNode;
     }
 
     getChildCount(): number {
-        return this.children.size();
+        return this.children.length;
     }
 
     getChild(index: number): SpriteNode {
-        return this.children.get(index);
+        return this.children[index];
     }
 
     removeChild(child: SpriteNode): void {
-        this.children.remove(child);
+        this.children.filter(item => item !== child);
     }
 }
