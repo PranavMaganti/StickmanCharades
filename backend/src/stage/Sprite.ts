@@ -23,6 +23,11 @@ class Sprite implements Point {
         return this.rootY;
     }
 
+    movePos(newX: number, newY: number): void {
+        this.rootX = newX;
+        this.rootY = newY;
+    }
+
     addChild(angle: number, length: number): SpriteNode {
         let newNode = new SpriteNode(this, angle, length);
         this.children.push(newNode);
