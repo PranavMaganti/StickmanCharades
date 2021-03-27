@@ -20,6 +20,7 @@ app.use(function(req, res, next) {
 io.on("connection", (socket: Socket) => {
   console.log("Some client connected");
   socket.on("chat", (message) => {
+    console.log(message)
     io.emit("chat", { message, id: socket.id });
   });
 });
