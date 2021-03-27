@@ -1,7 +1,7 @@
 import React from "react";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
-import ChatComponent from "./ChatComponent";
-import MainPage from "./MainPage";
+import GamePage from "./Pages/GamePage";
+import MainPage from "./Pages/MainPage";
 
 export default function App() {
   return (
@@ -10,7 +10,7 @@ export default function App() {
             renders the first one that matches the current URL. */}
       <Switch>
         <Route path="/play">
-          <ChatComponent />
+          <GamePage />
         </Route>
         <Route path="/">
           <MainPage />

@@ -7,3 +7,28 @@
     display: flex;
     flex-direction: column;
 }
+
+.game-layout {
+    display: flex;
+    flex-direction: row;
+}
+
+.chat-container {
+    outline: 0.5vh dashed blue;
+    padding: 2vh;
+}
+
+.flex-row {
+    display: flex;
+    flex-direction: row;
+}
+
+.flex-col {
+    display: flex;
+    flex-direction: column;
+}
+
+.user-img {
+    max-height: 8vh;
+    width: auto;
+}

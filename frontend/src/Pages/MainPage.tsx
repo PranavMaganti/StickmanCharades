@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
 import { Container, TextField, Button } from "@material-ui/core";
-import "./index.css";
-import socket from "./socket";
+import "../index.css";
+import socket from "../socket";
 
 export default function MainPage() {
   const [userName, setUserName] = useState("");

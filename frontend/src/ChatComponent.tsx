@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "./index.css";
 import socket from "./socket";
+import User from "./User";
 
 class ChatMessage {
   senderId: string;
@@ -30,6 +31,10 @@ export default function ChatComponent() {
 
   return (
     <div>
+      <User />
+      <User />
+      <User />
+
       <form className="chat-form">
         <label className="chat-label">
           Enter a message:
