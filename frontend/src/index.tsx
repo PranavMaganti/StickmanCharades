@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from "react";
 import ReactDOM from "react-dom";
-import socketIOClient from "socket.io-client";
-
-const ENDPOINT = "http://localhost:5000";
+import { socket } from "./service/socket";
 
 class ChatMessage {
   senderId: string;
@@ -14,16 +12,14 @@ class ChatMessage {
   }
 }
 
-export default function ClientComponent(props: {
-  socket: SocketIOClient.Socket;
-}) {
+export default function ClientComponent() {
   const [chatMessage, setChatMessage] = useState("");
 
   const emptyChats: ChatMessage[] = [];
   const [chats, setChats] = useState(emptyChats);
 
   useEffect(() => {
-    props.socket.on("chat", (data: { id: string; message: string }) => {
+    socket.on("chat", (data: { id: string; message: string }) => {
       console.log(data.message);
       setChats([...chats, new ChatMessage(data.id, data.message)]);
     });
@@ -35,7 +31,7 @@ export default function ClientComponent(props: {
         {chats.forEach((chatMsg: ChatMessage) => {
           <p
             style={{
-              color: chatMsg.senderId == props.socket.id ? "blue" : "black",
+              color: chatMsg.senderId == socket.id ? "blue" : "black",
             }}
           >
             {chatMsg.message}
@@ -54,7 +50,7 @@ export default function ClientComponent(props: {
           className="chat-submit"
           onClick={(e) => {
             e.preventDefault();
-            props.socket.emit("chat", chatMessage);
+            socket.emit("chat", chatMessage);
             setChatMessage("");
           }}
         >
@@ -65,9 +61,4 @@ export default function ClientComponent(props: {
   );
 }
 
-const socketClient = socketIOClient(ENDPOINT);
-
-ReactDOM.render(
-  <ClientComponent socket={socketClient} />,
-  document.getElementById("root")
-);
+ReactDOM.render(<ClientComponent />, document.getElementById("root"));
