@@ -32,7 +32,7 @@ class SpriteNode implements Point {
     adjustAngle(angleChange: number) {
         this.setAngle(this.angle + angleChange);
         this.children.forEach(element => {
-            
+            element.adjustAngle(angleChange);
         });
     }
 
