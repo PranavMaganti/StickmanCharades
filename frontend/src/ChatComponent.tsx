@@ -5,7 +5,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import socket from "./socket";
 import User from "./User";
 import UserData from "../../backend/src/UserData";
-import { TextField, Button } from "@material-ui/core";
+import { TextField, Button } from "@materiall-ui/core";
 class ChatMessage {
   senderId: string;
   message: string;
