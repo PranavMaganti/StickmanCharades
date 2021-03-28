@@ -4,7 +4,9 @@ import p5Types from "p5";
 import { useMemo } from "react";
 import Stage from "./stage/Stage";
 import { SpriteNode } from "./stage/SpriteNode";
+import { Sprite } from "./stage/Sprite";
 import { useState } from "react";
+import { IPoint } from "./stage/IPoint";
 
 class Point {
   x: number;
@@ -84,28 +86,44 @@ export default function StickmanComponent() {
     () => Stage.generateStickman(center.x, center.y, STICKMAN_LENGTH),
     [center]
   );
-  const [selectedNode, setSelectedNode] = useState<SpriteNode>();
+  const [selectedNode, setSelectedNode] = useState<IPoint>();
 
   const onClick = (p5: p5Types) => {
-    setSelectedNode(
-      getClosestSprite(p5.mouseX, p5.mouseY, stickmanSprite.sprites)
+    let closestChild = getClosestSprite(
+      p5.mouseX,
+      p5.mouseY,
+      stickmanSprite.sprites
     );
+    let closestDist = closestChild.getSquaredDistanceFrom(p5.mouseX, p5.mouseY);
+    let parentDist = stickmanSprite.getSquaredDistanceFrom(
+      p5.mouseX,
+      p5.mouseY
+    );
+    if (closestDist < parentDist) {
+      setSelectedNode(closestChild);
+    } else {
+      setSelectedNode(stickmanSprite);
+    }
   };
 
   const onDrag = (p5: p5Types) => {
     if (selectedNode != undefined) {
-      const selectedParent = selectedNode.parent;
+      if (selectedNode instanceof Sprite) {
+        // TODO: Dont let this overflow the form
+        selectedNode.movePos(p5.mouseX, p5.mouseY);
+      } else if (selectedNode instanceof SpriteNode) {
+        const selectedParent = selectedNode.parent;
 
-      const parentX = selectedParent.getX();
-      const parentY = selectedParent.getY();
+        const parentX = selectedParent.getX();
+        const parentY = selectedParent.getY();
 
-      const angle =
-        -(Math.atan2(p5.mouseX - parentX, p5.mouseY - parentY) * 180) /
-          Math.PI +
-        180;
+        const angle =
+          180 -
+          Math.atan2(p5.mouseX - parentX, p5.mouseY - parentY) *
+            (180 / Math.PI);
 
-      // console.log((angle + 360) % 360);
-      selectedNode.setAngle(angle);
+        selectedNode.setAngle(angle);
+      }
     }
   };
 

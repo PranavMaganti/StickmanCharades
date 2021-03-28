@@ -1,9 +1,9 @@
 import { SpriteNode } from "./SpriteNode";
-import { Point } from "./Point";
+import { IPoint } from "./IPoint";
 
 export { Sprite };
 
-class Sprite implements Point {
+class Sprite implements IPoint {
   sprites: SpriteNode[];
 
   rootX: number;

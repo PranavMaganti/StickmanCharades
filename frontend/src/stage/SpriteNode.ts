@@ -1,15 +1,15 @@
-import { Point } from "./Point";
+import { IPoint } from "./IPoint";
 
 export { SpriteNode };
 
-class SpriteNode implements Point {
+class SpriteNode implements IPoint {
   children: SpriteNode[];
-  parent: Point;
+  parent: IPoint;
 
   angle: number;
   length: number;
 
-  constructor(parent: Point, angle: number, length: number) {
+  constructor(parent: IPoint, angle: number, length: number) {
     this.children = [];
     this.angle = angle % 360;
     this.length = length;
