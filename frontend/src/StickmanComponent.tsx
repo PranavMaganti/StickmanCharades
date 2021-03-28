@@ -9,6 +9,7 @@ import { useState } from "react";
 import { IPoint } from "./stage/IPoint";
 import { Shape } from "./stage/Shape";
 import socket from "./socket";
+import { Button } from "@material-ui/core";
 
 class Point {
   x: number;
@@ -178,12 +179,27 @@ export default function StickmanComponent() {
     drawSprite(p5, stickmanSprite.getX(), stickmanSprite.getY(), "#FFA500");
   };
 
+  const resetSprite = () => {
+    let newMan = Stage.generateStickman(center.x, center.y, STICKMAN_LENGTH);
+    setStickmanSprite(newMan);
+    socket.emit("stickmanEmitMove", newMan.toJson());
+  };
+
   return (
-    <Sketch
-      setup={setup}
-      draw={draw}
-      mouseDragged={onDrag}
-      mousePressed={onClick}
-    />
+    <div>
+      <Button
+        variant="contained"
+        color="secondary"
+        onClick={() => resetSprite()}
+      >
+        RESET
+      </Button>
+      <Sketch
+        setup={setup}
+        draw={draw}
+        mouseDragged={onDrag}
+        mousePressed={onClick}
+      />
+    </div>
   );
 }
