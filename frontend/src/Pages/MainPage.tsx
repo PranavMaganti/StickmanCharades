@@ -13,7 +13,7 @@ import socket from "../socket";
 
 const useStyles = makeStyles({
   topMargin: {
-    marginTop: 5,
+    marginTop: 20,
     textAlign: "center",
   },
   bottomMargin: {
@@ -48,10 +48,12 @@ export default function MainPage() {
   });
 
   return (
-    <Container maxWidth="sm" className={classes.hugeTopMargin}>
-      <Card>
-        <Typography variant="h2">charades.me</Typography>
-        <Container maxWidth="sm" className={classes.bothMargin}>
+    <Container maxWidth="xs" className={classes.hugeTopMargin}>
+      <Card variant="outlined">
+        <Typography variant="h3" className={classes.topMargin}>
+          charades.me
+        </Typography>
+        <Container maxWidth="xs">
           <form className="input-fields">
             <TextField
               className={classes.bothMargin}

@@ -3,6 +3,11 @@
     text-align: right;
 }
 
+.chat-form {
+    display: flex;
+    flex-direction: row;
+}
+
 .input-fields {
     display: flex;
     flex-direction: column;
