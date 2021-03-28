@@ -13,11 +13,13 @@ const io = require("socket.io")(server, {
 });
 const users: Map<String, UserData> = new Map();
 
-const words: string[] = ["climbing", "boxing", "dico", "eating", "yoga"];
+const words: string[] = ["climbing", "boxing", "disco", "eating", "yoga"];
+let currentWord: string = "";
 
 let gameStarted: boolean = false;
 let usersPlayOrder: String[] = [];
 let currentPlayer = 0;
+let remainingPlayersGuessing = currentPlayer;
 
 function shuffle(a: String[]): String[] {
   for (let i = a.length - 1; i > 0; i--) {
@@ -44,19 +46,20 @@ io.on("connection", (socket: Socket) => {
     if (gameStarted == false) {
       usersPlayOrder = shuffle(Array.from(users.keys()));
       gameStarted = true;
-      const randomWord = words[Math.floor(Math.random() * words.length)];
+      currentWord = words[Math.floor(Math.random() * words.length)];
       let blankedWord = "";
-      for (var x = 0, c = ""; (c = randomWord.charAt(x)); x++) {
+      for (var x = 0, c = ""; (c = currentWord.charAt(x)); x++) {
         blankedWord += c == " " ? " " : "_ ";
       }
 
       io.to(usersPlayOrder[currentPlayer]).emit("startRound", {
         type: "player",
-        word: randomWord,
+        word: currentWord,
       });
 
       Array.from(users.keys())
-        .filter((it) => it != usersPlayOrder[currentPlayer]).forEach((element) => {
+        .filter((it) => it != usersPlayOrder[currentPlayer])
+        .forEach((element) => {
           io.to(element).emit("startRound", {
             type: "guesser",
             word: blankedWord,
@@ -66,16 +69,25 @@ io.on("connection", (socket: Socket) => {
   });
 
   socket.on("chat", (message) => {
+    console.log(socket.id + ": " + message);
     var currentUser = users.get(socket.id);
     if (currentUser) {
-      currentUser.lastGuess = message;
-      console.log(socket.id + ": " + message);
-      io.emit("chat", {
-        message: currentUser.userName + ": " + message,
-        id: socket.id,
-      });
-      io.emit("users", Array.from(users.values()));
+      if (!gameStarted) {
+        io.emit("chat", {
+          message: currentUser.userName + ": " + message,
+          id: socket.id,
+        });
+      } else if (currentUser.guessed == false) {
+        if (message.toLowerCase() == currentWord.toLowerCase()) {
+          currentUser.guessed = true;
+          remainingPlayersGuessing -= 1;
+          currentUser.score += 10;
+        } else {
+          currentUser.lastGuess = message;
+        }
+      }
     }
+    io.emit("users", Array.from(users.values()));
   });
 
   socket.on("requestJoinRoom", (userName: String) => {
