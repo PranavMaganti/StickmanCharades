@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Sketch from "react-p5";
 import p5Types from "p5";
 import { useMemo } from "react";
@@ -8,6 +8,7 @@ import { Sprite } from "./stage/Sprite";
 import { useState } from "react";
 import { IPoint } from "./stage/IPoint";
 import { Shape } from "./stage/Shape";
+import socket from "./socket";
 
 class Point {
   x: number;
@@ -100,11 +101,26 @@ export default function StickmanComponent() {
     []
   );
 
-  const stickmanSprite = useMemo(
-    () => Stage.generateStickman(center.x, center.y, STICKMAN_LENGTH),
-    [center]
+  const [stickmanSprite, setStickmanSprite] = useState(
+    Stage.generateStickman(center.x, center.y, STICKMAN_LENGTH)
   );
   const [selectedNode, setSelectedNode] = useState<IPoint>();
+
+  useEffect(() => {
+    socket.on(
+      "stickmanReceiveMove",
+      (data: { message: string; id: string }) => {
+        const sprite: Sprite = Sprite.fromJson(data.message);
+        if (socket.id != data.id) {
+          setStickmanSprite(sprite);
+        }
+      }
+    );
+
+    return () => {
+      socket.off("stickmanReceiveMove");
+    };
+  });
 
   const onClick = (p5: p5Types) => {
     let closestChild = getClosestSprite(
@@ -142,6 +158,7 @@ export default function StickmanComponent() {
 
         selectedNode.setAngle(angle);
       }
+      socket.emit("stickmanEmitMove", stickmanSprite.toJson());
     }
   };
 

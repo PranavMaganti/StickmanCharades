@@ -1,4 +1,4 @@
 export enum Shape {
-  Line,
-  Circle,
+  Line = 0,
+  Circle = 1,
 }

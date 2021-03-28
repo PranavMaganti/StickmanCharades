@@ -5,4 +5,6 @@ interface IPoint {
   getY(): number;
   getAngle(): number;
   getSquaredDistanceFrom(x: number, y: number): number;
+
+  toJson(): string;
 }

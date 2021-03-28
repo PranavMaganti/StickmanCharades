@@ -10,10 +10,32 @@ class Sprite implements IPoint {
   rootX: number;
   rootY: number;
 
-  constructor(rootX: number, rootY: number) {
+  constructor(rootX: number, rootY: number, sprites: SpriteNode[] = []) {
     this.rootX = rootX;
     this.rootY = rootY;
-    this.sprites = [];
+    this.sprites = sprites;
+  }
+
+  toJson(): string {
+    return JSON.stringify({
+      rootX: this.rootX,
+      rootY: this.rootY,
+      sprites: this.sprites.map((it) => it.toJson()),
+    });
+  }
+
+  static fromJson(json: string): Sprite {
+    const partial: {
+      rootX: number;
+      rootY: number;
+      sprites: string[];
+    } = JSON.parse(json);
+
+    const sprite = new Sprite(partial.rootX, partial.rootY);
+    partial.sprites.forEach((it) =>
+      sprite.addChildNode(SpriteNode.fromJson(sprite, it))
+    );
+    return sprite;
   }
 
   getSquaredDistanceFrom(x: number, y: number): number {
@@ -35,6 +57,10 @@ class Sprite implements IPoint {
   movePos(newX: number, newY: number): void {
     this.rootX = newX;
     this.rootY = newY;
+  }
+
+  addChildNode(node: SpriteNode) {
+    this.sprites.push(node);
   }
 
   addChild(

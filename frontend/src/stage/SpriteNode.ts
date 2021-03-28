@@ -19,6 +19,35 @@ class SpriteNode implements IPoint {
     this.limbShape = limbShape;
   }
 
+  static fromJson(parent: IPoint, json: string): SpriteNode {
+    const partial: {
+      angle: number;
+      length: number;
+      limbShape: number;
+      children: string[];
+    } = JSON.parse(json);
+
+    const node = new SpriteNode(
+      parent,
+      partial.angle,
+      partial.length,
+      partial.limbShape
+    );
+    partial.children.forEach((it) =>
+      node.addChildNode(SpriteNode.fromJson(node, it))
+    );
+    return node;
+  }
+
+  toJson(): string {
+    return JSON.stringify({
+      angle: this.angle,
+      length: this.length,
+      children: this.children.map((it) => it.toJson()),
+      limbShape: this.limbShape.valueOf(),
+    });
+  }
+
   getSquaredDistanceFrom(x: number, y: number): number {
     return (x - this.getX()) ** 2 + (y - this.getY()) ** 2;
   }
@@ -48,6 +77,10 @@ class SpriteNode implements IPoint {
 
   setLength(length: number) {
     this.length = length;
+  }
+
+  addChildNode(node: SpriteNode) {
+    this.children.push(node);
   }
 
   addChild(

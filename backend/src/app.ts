@@ -56,6 +56,10 @@ io.on("connection", (socket: Socket) => {
       io.emit("users", Array.from(users.values()));
     }
   });
+
+  socket.on("stickmanEmitMove", (message) => {
+    io.emit("stickmanReceiveMove", { message: message, id: socket.id });
+  });
 });
 
 const port = process.env.PORT || 5000;
