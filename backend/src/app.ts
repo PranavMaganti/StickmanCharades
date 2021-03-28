@@ -19,7 +19,7 @@ let currentWord: string = "";
 let gameStarted: boolean = false;
 let usersPlayOrder: String[] = [];
 let currentPlayer = 0;
-let remainingPlayersGuessing = currentPlayer;
+let remainingPlayersGuessing = 0;
 
 function shuffle(a: String[]): String[] {
   for (let i = a.length - 1; i > 0; i--) {
@@ -46,6 +46,7 @@ io.on("connection", (socket: Socket) => {
     if (gameStarted == false) {
       usersPlayOrder = shuffle(Array.from(users.keys()));
       gameStarted = true;
+      remainingPlayersGuessing = usersPlayOrder.length - 1;
       currentWord = words[Math.floor(Math.random() * words.length)];
       let blankedWord = "";
       for (var x = 0, c = ""; (c = currentWord.charAt(x)); x++) {
@@ -58,8 +59,9 @@ io.on("connection", (socket: Socket) => {
       });
 
       Array.from(users.keys())
-        .filter((it) => it != usersPlayOrder[currentPlayer]).forEach((element) => {
-          console.log("Starting round for: ", element)
+        .filter((it) => it != usersPlayOrder[currentPlayer])
+        .forEach((element) => {
+          console.log("Starting round for: ", element);
           io.to(element).emit("startRound", {
             type: "guesser",
             word: blankedWord,
@@ -82,6 +84,31 @@ io.on("connection", (socket: Socket) => {
           currentUser.guessed = true;
           remainingPlayersGuessing -= 1;
           currentUser.score += 10;
+
+          if (remainingPlayersGuessing == 0) {
+            currentPlayer = (currentPlayer + 1) % usersPlayOrder.length;
+            remainingPlayersGuessing = usersPlayOrder.length - 1;
+
+            currentWord = words[Math.floor(Math.random() * words.length)];
+            let blankedWord = "";
+            for (var x = 0, c = ""; (c = currentWord.charAt(x)); x++) {
+              blankedWord += c == " " ? " " : "_ ";
+            }
+            io.to(usersPlayOrder[currentPlayer]).emit("startRound", {
+              type: "player",
+              word: currentWord,
+            });
+
+            Array.from(users.keys())
+              .filter((it) => it != usersPlayOrder[currentPlayer])
+              .forEach((element) => {
+                console.log("Starting round for: ", element);
+                io.to(element).emit("startRound", {
+                  type: "guesser",
+                  word: blankedWord,
+                });
+              });
+          }
         } else {
           currentUser.lastGuess = message;
         }
