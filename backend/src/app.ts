@@ -58,8 +58,8 @@ io.on("connection", (socket: Socket) => {
       });
 
       Array.from(users.keys())
-        .filter((it) => it != usersPlayOrder[currentPlayer])
-        .forEach((element) => {
+        .filter((it) => it != usersPlayOrder[currentPlayer]).forEach((element) => {
+          console.log("Starting round for: ", element)
           io.to(element).emit("startRound", {
             type: "guesser",
             word: blankedWord,

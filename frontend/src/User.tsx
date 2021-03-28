@@ -20,6 +20,7 @@ export default function User(prop: {
   userName: String;
   lastGuess: String;
   score: Number;
+  guessedCorrect: boolean;
 }) {
   const classes = useStyles();
   return (
@@ -34,6 +35,9 @@ export default function User(prop: {
         </Typography>
         <Typography variant="body2" gutterBottom>
           Score: {prop.score}
+        </Typography>
+        <Typography variant="body2" gutterBottom>
+          {prop.guessedCorrect ? "Guessed Correctly" : "Still Guessing"}
         </Typography>
       </div>
     </div>

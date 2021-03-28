@@ -224,8 +224,8 @@ export default function StickmanComponent() {
       <Sketch
         setup={setup}
         draw={draw}
-        mouseDragged={onDrag}
-        mousePressed={onClick}
+        mouseDragged={!isGuesser ? onDrag : () => {}}
+        mousePressed={!isGuesser ? onClick : () => {}}
       />
     </div>
   );

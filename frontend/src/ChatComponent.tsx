@@ -40,6 +40,8 @@ export default function ChatComponent() {
   const [chats, setChats] = useState(emptyChats);
   const [users, setUsers] = useState<Array<UserData>>([]);
   const classes = useStyles();
+  const [userGuessed, setUserGuessed] = useState(false);
+  const [isGuesser, setIsGuesser] = useState(true);
 
   useEffect(() => {
     socket.on("chat", (data: { id: string; message: string }) => {
@@ -48,6 +50,23 @@ export default function ChatComponent() {
 
     socket.on("users", (serverUsers: Array<UserData>) => {
       setUsers(serverUsers);
+    });
+
+    socket.on("startRound", (data: { type: string; word: string }) => {
+      setIsGuesser(data.type == "guesser");
+    });
+
+    socket.on("userComplete", (username: string, id: string) => {
+      users.forEach((it) => {
+        if (it.userName == username) {
+          it.lastGuess = "";
+          it.guessedCorrect = true;
+        }
+      });
+
+      if (socket.id == id) {
+        setUserGuessed(true);
+      }
     });
 
     return () => {
@@ -75,6 +94,7 @@ export default function ChatComponent() {
             userName={user.userName}
             lastGuess={user.lastGuess}
             score={user.score}
+            guessedCorrect={user.guessedCorrect}
             key={index}
           />
         </Card>
@@ -100,6 +120,7 @@ export default function ChatComponent() {
             onClick={(e) => submitGuess(e)}
             variant="outlined"
             color="secondary"
+            disabled={userGuessed || !isGuesser}
           >
             Enter
           </Button>
