@@ -16,7 +16,7 @@ const useStyles = makeStyles({
   },
 });
 
-export default function User(prop: { userName: String }) {
+export default function User(prop: { userName: String; lastGuess: String }) {
   const classes = useStyles();
   return (
     <div className="flex-row">
@@ -26,7 +26,7 @@ export default function User(prop: { userName: String }) {
           {prop.userName}
         </Typography>
         <Typography variant="body2" gutterBottom>
-          Most recent guess: Chicken!
+          Most recent guess: {prop.lastGuess}
         </Typography>
       </div>
     </div>

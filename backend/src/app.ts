@@ -1,6 +1,7 @@
 import { Socket } from "socket.io";
 import express from "express";
 import cors from "cors";
+import UserData from "./UserData";
 
 const app = express();
 const server = require("http").createServer(app);
@@ -10,7 +11,7 @@ const io = require("socket.io")(server, {
     methods: ["GET", "POST"],
   },
 });
-const users: Map<String, String> = new Map();
+const users: Map<String, UserData> = new Map();
 
 app.use(function (req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
@@ -29,10 +30,14 @@ io.on("connection", (socket: Socket) => {
   });
   socket.on("requestJoinRoom", (userName: String) => {
     console.log("Connection Attempt: " + userName);
-    if (Array.from(users.values()).includes(userName)) {
+    if (
+      Array.from(users.values())
+        .map((user) => user.userName)
+        .includes(userName)
+    ) {
       socket.emit("joinRoom", { canJoin: false });
     } else {
-      users.set(socket.id, userName);
+      users.set(socket.id, new UserData(userName));
       socket.emit("joinRoom", { canJoin: true });
       io.emit("users", Array.from(users.values()));
     }
