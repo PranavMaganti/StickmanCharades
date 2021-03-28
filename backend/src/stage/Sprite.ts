@@ -4,7 +4,7 @@ import { Point } from "./Point";
 export { Sprite }
 
 class Sprite implements Point {
-    private children: SpriteNode[];
+    private sprites: SpriteNode[];
 
     private rootX: number;
     private rootY: number;
@@ -12,7 +12,7 @@ class Sprite implements Point {
     constructor(rootX: number, rootY: number) {
         this.rootX = rootX;
         this.rootY = rootY;
-        this.children = [];
+        this.sprites = [];
     }
 
     getX(): number {
@@ -30,19 +30,19 @@ class Sprite implements Point {
 
     addChild(angle: number, length: number): SpriteNode {
         let newNode = new SpriteNode(this, angle, length);
-        this.children.push(newNode);
+        this.sprites.push(newNode);
         return newNode;
     }
 
     getChildCount(): number {
-        return this.children.length;
+        return this.sprites.length;
     }
 
     getChild(index: number): SpriteNode {
-        return this.children[index];
+        return this.sprites[index];
     }
 
     removeChild(child: SpriteNode): void {
-        this.children.filter(item => item !== child);
+        this.sprites.filter(item => item !== child);
     }
 }

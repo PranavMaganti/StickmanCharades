@@ -1,31 +1,136 @@
 import React from "react";
 import Sketch from "react-p5";
 import p5Types from "p5";
+import { useMemo } from "react";
+import Stage from "./stage/Stage";
+import { SpriteNode } from "./stage/SpriteNode";
 import { useState } from "react";
 
-type Coordinates = {
+class Point {
   x: number;
   y: number;
-};
 
-// const HEAD_HEIGHT = 30;
+  constructor(x: number, y: number) {
+    this.x = x;
+    this.y = y;
+  }
+}
+
+const STICKMAN_LENGTH = 60;
+const CANVAS_WIDTH = 1000;
+const CANVAS_HEIGHT = 1000;
+
+function drawSprite(
+  p5: p5Types,
+  x: number,
+  y: number,
+  color: string = "#FF0000"
+) {
+  p5.strokeWeight(2);
+  p5.fill(color);
+  p5.ellipse(x, y, 20, 20);
+}
+
+function drawSpriteNodes(
+  p5: p5Types,
+  currX: number,
+  currY: number,
+  sprites: SpriteNode[]
+) {
+  sprites.forEach((element) => {
+    p5.strokeWeight(5);
+    p5.line(currX, currY, element.getX(), element.getY());
+    drawSpriteNodes(p5, element.getX(), element.getY(), element.children);
+    drawSprite(p5, element.getX(), element.getY());
+  });
+}
+
+function getClosestSprite(
+  x: number,
+  y: number,
+  nodes: SpriteNode[]
+): SpriteNode {
+  let closestNode: SpriteNode = nodes[0];
+  let minDistance: number = closestNode.getSquaredDistanceFrom(x, y);
+  nodes.forEach((it) => {
+    const distFromMouse = it.getSquaredDistanceFrom(x, y);
+
+    if (it.children.length > 0) {
+      const minChild = getClosestSprite(x, y, it.children);
+      const minChildDist = minChild.getSquaredDistanceFrom(x, y);
+
+      if (minChildDist < minDistance) {
+        closestNode = minChild;
+        minDistance = minChildDist;
+      }
+    }
+
+    if (distFromMouse < minDistance) {
+      closestNode = it;
+      minDistance = distFromMouse;
+    }
+  });
+
+  return closestNode;
+}
 
 export default function StickmanComponent() {
-  const [center, setCenter] = useState<Coordinates>({ x: 0, y: 0 });
+  const center = useMemo<Point>(
+    () => new Point(CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2),
+    []
+  );
+
+  const stickmanSprite = useMemo(
+    () => Stage.generateStickman(center.x, center.y, STICKMAN_LENGTH),
+    [center]
+  );
+  const [selectedNode, setSelectedNode] = useState<SpriteNode>();
+
+  const onClick = (p5: p5Types) => {
+    setSelectedNode(
+      getClosestSprite(p5.mouseX, p5.mouseY, stickmanSprite.sprites)
+    );
+  };
 
   const onDrag = (p5: p5Types) => {
-    setCenter({ x: p5.winMouseX, y: p5.winMouseY });
+    if (selectedNode != undefined) {
+      const selectedParent = selectedNode.parent;
+
+      const parentX = selectedParent.getX();
+      const parentY = selectedParent.getY();
+
+      const angle =
+        -(Math.atan2(p5.mouseX - parentX, p5.mouseY - parentY) * 180) /
+          Math.PI +
+        180;
+
+      // console.log((angle + 360) % 360);
+      selectedNode.setAngle(angle);
+    }
   };
 
   const setup = (p5: p5Types, canvasParentRef: Element) => {
-    p5.createCanvas(1000, 1000).parent(canvasParentRef);
+    p5.createCanvas(CANVAS_WIDTH, CANVAS_HEIGHT).parent(canvasParentRef);
   };
 
   const draw = (p5: p5Types) => {
     p5.clear();
-    p5.fill("#000000");
-    p5.ellipse(center.x, center.y, 10, 10);
+    drawSpriteNodes(
+      p5,
+      stickmanSprite.getX(),
+      stickmanSprite.getY(),
+      stickmanSprite.sprites
+    );
+
+    drawSprite(p5, stickmanSprite.getX(), stickmanSprite.getY(), "#FFA500");
   };
 
-  return <Sketch setup={setup} draw={draw} mouseDragged={onDrag} />;
+  return (
+    <Sketch
+      setup={setup}
+      draw={draw}
+      mouseDragged={onDrag}
+      mousePressed={onClick}
+    />
+  );
 }
