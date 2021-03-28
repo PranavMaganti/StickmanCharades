@@ -7,4 +7,6 @@ socket.onAny((event, ...args) => {
   console.log(event, args);
 });
 
+socket.connect();
+
 export default socket;
