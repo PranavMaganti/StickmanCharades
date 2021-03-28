@@ -221,16 +221,12 @@ export default function StickmanComponent() {
           RESET
         </Button>
       </div>
-      {!isGuesser ? (
-        <Sketch
-          setup={setup}
-          draw={draw}
-          mouseDragged={onDrag}
-          mousePressed={onClick}
-        />
-      ) : (
-        <Sketch setup={setup} draw={draw} />
-      )}
+      <Sketch
+        setup={setup}
+        draw={draw}
+        mouseDragged={onDrag}
+        mousePressed={onClick}
+      />
     </div>
   );
 }
