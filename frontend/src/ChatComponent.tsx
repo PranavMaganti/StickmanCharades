@@ -74,6 +74,7 @@ export default function ChatComponent() {
           <User
             userName={user.userName}
             lastGuess={user.lastGuess}
+            score={user.score}
             key={index}
           />
         </Card>
