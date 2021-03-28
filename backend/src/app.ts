@@ -1,6 +1,5 @@
 import { Socket } from "socket.io";
 import express from "express";
-import cors from "cors";
 import UserData from "./UserData";
 import path from "path";
 
@@ -14,7 +13,21 @@ const io = require("socket.io")(server, {
 });
 const users: Map<String, UserData> = new Map();
 
-app.use("/", express.static(path.resolve(__dirname, '../../frontend/build')));
+const words: string[] = ["climbing", "boxing", "dico", "eating", "yoga"];
+
+let gameStarted: boolean = false;
+let usersPlayOrder: String[] = [];
+let currentPlayer = 0;
+
+function shuffle(a: String[]): String[] {
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+app.use("/", express.static(path.resolve(__dirname, "../../frontend/build")));
 
 app.use(function (req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
@@ -27,6 +40,31 @@ app.use(function (req, res, next) {
 
 io.on("connection", (socket: Socket) => {
   console.log("Some client connected");
+  socket.on("startGame", () => {
+    if (gameStarted == false) {
+      usersPlayOrder = shuffle(Array.from(users.keys()));
+      gameStarted = true;
+      const randomWord = words[Math.floor(Math.random() * words.length)];
+      let blankedWord = "";
+      for (var x = 0, c = ""; (c = randomWord.charAt(x)); x++) {
+        blankedWord += c == " " ? " " : "_ ";
+      }
+
+      io.to(usersPlayOrder[currentPlayer]).emit("startRound", {
+        type: "player",
+        word: randomWord,
+      });
+
+      Array.from(users.keys())
+        .filter((it) => it != usersPlayOrder[currentPlayer]).forEach((element) => {
+          io.to(element).emit("startRound", {
+            type: "guesser",
+            word: blankedWord,
+          });
+        });
+    }
+  });
+
   socket.on("chat", (message) => {
     var currentUser = users.get(socket.id);
     if (currentUser) {
@@ -39,7 +77,7 @@ io.on("connection", (socket: Socket) => {
       io.emit("users", Array.from(users.values()));
     }
   });
-  
+
   socket.on("requestJoinRoom", (userName: String) => {
     console.log("Connection Attempt: " + userName);
     if (
@@ -52,11 +90,21 @@ io.on("connection", (socket: Socket) => {
       users.set(socket.id, new UserData(userName));
       socket.emit("joinRoom", { canJoin: true });
       io.emit("users", Array.from(users.values()));
+      if (gameStarted) {
+        usersPlayOrder.push(socket.id);
+      }
     }
   });
+
   socket.on("disconnect", (reason) => {
     if (Array.from(users.keys()).includes(socket.id)) {
       users.delete(socket.id);
+      const removeIndex = usersPlayOrder.indexOf(socket.id);
+      delete usersPlayOrder[removeIndex];
+      if (removeIndex == currentPlayer) {
+        // TODO: Some logic to reset the turn and go onto the next player
+      }
+
       io.emit("users", Array.from(users.values()));
     }
   });
@@ -66,10 +114,11 @@ io.on("connection", (socket: Socket) => {
   });
 });
 
-app.get('*', function(request, response) {
-  response.sendFile(path.resolve(__dirname, '../../frontend/build', 'index.html'));
+app.get("*", function (request, response) {
+  response.sendFile(
+    path.resolve(__dirname, "../../frontend/build", "index.html")
+  );
 });
-
 
 const port = process.env.PORT || 5000;
 

@@ -109,7 +109,7 @@ export default function ChatComponent() {
         <Button
           className="game-start"
           onClick={() => {
-            true;
+            socket.emit("startGame");
           }}
           variant="contained"
           color="secondary"

@@ -97,8 +97,6 @@ function getClosestSprite(
 }
 
 export default function StickmanComponent() {
-  const [guessHint] = useState("Room Code");
-
   const center = useMemo<Point>(
     () => new Point(CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2),
     []
@@ -108,6 +106,8 @@ export default function StickmanComponent() {
     Stage.generateStickman(center.x, center.y, STICKMAN_LENGTH)
   );
   const [selectedNode, setSelectedNode] = useState<IPoint>();
+  const [wordHint, setWordHint] = useState("Room Code");
+  const [isGuesser, setIsGuesser] = useState(true);
 
   useEffect(() => {
     socket.on(
@@ -120,8 +120,15 @@ export default function StickmanComponent() {
       }
     );
 
+    socket.on("startRound", (data: { type: string; word: string }) => {
+      console.log(data);
+      setIsGuesser(data.type == "guesser");
+      setWordHint(data.word);
+    });
+
     return () => {
       socket.off("stickmanReceiveMove");
+      socket.off("startRound");
     };
   });
 
@@ -186,10 +193,25 @@ export default function StickmanComponent() {
     setStickmanSprite(newMan);
     socket.emit("stickmanEmitMove", newMan.toJson());
   };
+
+  let sketch;
+  if (!isGuesser) {
+    sketch = (
+      <Sketch
+        setup={setup}
+        draw={draw}
+        mouseDragged={onDrag}
+        mousePressed={onClick}
+      />
+    );
+  } else {
+    sketch = <Sketch setup={setup} draw={draw} />;
+  }
+
   return (
     <div>
       <div className="flex-col">
-        <Typography className="hint_text">{guessHint}</Typography>
+        <Typography className="hint_text">{wordHint}</Typography>
         <Button
           variant="contained"
           color="secondary"
@@ -198,12 +220,7 @@ export default function StickmanComponent() {
           RESET
         </Button>
       </div>
-      <Sketch
-        setup={setup}
-        draw={draw}
-        mouseDragged={onDrag}
-        mousePressed={onClick}
-      />
+      {sketch}
     </div>
   );
 }
