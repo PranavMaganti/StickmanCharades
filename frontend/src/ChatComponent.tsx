@@ -17,14 +17,20 @@ export default function ChatComponent() {
   const [chatMessage, setChatMessage] = useState("");
   const emptyChats: ChatMessage[] = [];
   const [chats, setChats] = useState(emptyChats);
+  const [users, setUsers] = useState<Array<String>>([]);
 
   useEffect(() => {
     socket.on("chat", (data: { id: string; message: string }) => {
       setChats([...chats, new ChatMessage(data.id, data.message)]);
     });
 
+    socket.on("users", (serverUsers: Array<String>) => {
+      setUsers(serverUsers);
+    });
+
     return () => {
       socket.off("chat");
+      socket.off("users");
     };
   });
 
@@ -36,9 +42,9 @@ export default function ChatComponent() {
 
   return (
     <div>
-      <User />
-      <User />
-      <User />
+      {users.map((user: String, index: any) => (
+        <User userName={user} key={index} />
+      ))}
 
       <form className="chat-form">
         <TextField

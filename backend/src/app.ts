@@ -10,7 +10,7 @@ const io = require("socket.io")(server, {
     methods: ["GET", "POST"],
   },
 });
-const users = new Set();
+const users:Set<String> = new Set();
 
 app.use(function (req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
@@ -34,6 +34,7 @@ io.on("connection", (socket: Socket) => {
     } else {
       users.add(userName);
       socket.emit("joinRoom", { canJoin: true });
+      io.emit("users", Array.from(users));
     }
   });
 });
