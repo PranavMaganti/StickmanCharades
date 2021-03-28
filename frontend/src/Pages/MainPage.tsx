@@ -87,7 +87,18 @@ export default function MainPage() {
               Join Game
             </Button>
 
-            <Button>Or start a new room!</Button>
+            <Button
+              className={classes.bothMargin}
+              variant="contained"
+              color="secondary"
+              onClick={() => {
+                if (userName != "") {
+                  socket.emit("requestJoinRoom", userName);
+                }
+              }}
+            >
+              Or start a new room!
+            </Button>
           </form>
         </Container>
       </Card>

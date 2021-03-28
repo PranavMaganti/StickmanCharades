@@ -106,7 +106,7 @@ export default function StickmanComponent() {
     Stage.generateStickman(center.x, center.y, STICKMAN_LENGTH)
   );
   const [selectedNode, setSelectedNode] = useState<IPoint>();
-  const [wordHint, setWordHint] = useState("Room Code");
+  const [wordHint, setWordHint] = useState("Room Code: W3z90");
   const [isGuesser, setIsGuesser] = useState(true);
 
   useEffect(() => {
