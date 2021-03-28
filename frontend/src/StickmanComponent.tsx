@@ -212,7 +212,9 @@ export default function StickmanComponent() {
   return (
     <div>
       <div className="flex-col">
-        <Typography className="hint_text">{wordHint}</Typography>
+        <Typography variant="h3" className="hint_text">
+          {wordHint}
+        </Typography>
         <Button
           variant="contained"
           color="secondary"
