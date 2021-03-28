@@ -19,7 +19,7 @@ let currentWord: string = "";
 let gameStarted: boolean = false;
 let usersPlayOrder: String[] = [];
 let currentPlayer = 0;
-let remainingPlayersGuessing = currentPlayer;
+let remainingPlayersGuessing = users.size - 1;
 
 function shuffle(a: String[]): String[] {
   for (let i = a.length - 1; i > 0; i--) {
@@ -58,13 +58,23 @@ io.on("connection", (socket: Socket) => {
       });
 
       Array.from(users.keys())
-        .filter((it) => it != usersPlayOrder[currentPlayer]).forEach((element) => {
-          console.log("Starting round for: ", element)
+        .filter((it) => it != usersPlayOrder[currentPlayer])
+        .forEach((element) => {
+          console.log("Starting round for: ", element);
           io.to(element).emit("startRound", {
             type: "guesser",
             word: blankedWord,
           });
         });
+
+      if (remainingPlayersGuessing <= 0) {
+        users.forEach((user) => {
+          user.guessed = false;
+          user.lastGuess = "";
+        });
+        currentPlayer++;
+        io.emit("endRound");
+      }
     }
   });
 
@@ -81,7 +91,11 @@ io.on("connection", (socket: Socket) => {
         if (message.toLowerCase() == currentWord.toLowerCase()) {
           currentUser.guessed = true;
           remainingPlayersGuessing -= 1;
-          currentUser.score += 10;
+          currentUser.incrementScore(10);
+          var currentDrawer = users.get(usersPlayOrder[currentPlayer]);
+          if (currentDrawer) {
+            currentDrawer.incrementScore(5);
+          }
         } else {
           currentUser.lastGuess = message;
         }
