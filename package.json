@@ -9,10 +9,6 @@
     "start": "cd backend/ && npm run start",
     "build": "cd frontend/ && npm install && npm run build"
   },
-  "cacheDirectories": [
-    "node_modules",
-    "frontend/node_modules"
-  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/vanpra/StickmanCharades.git"
