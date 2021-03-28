@@ -40,5 +40,8 @@
 
 .game-start {
     width: 100%;
-    
+}
+
+.user-name-field {
+    max-width: 10rem;
 }

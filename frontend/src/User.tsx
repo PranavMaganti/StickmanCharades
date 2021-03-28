@@ -26,7 +26,7 @@ export default function User(prop: {
     <div className="flex-row">
       <Avatar>{prop.userName.charAt(0)}</Avatar>
       <div className={[classes.leftMargin, "flex-col"].join(" ")}>
-        <Typography variant="body1" gutterBottom>
+        <Typography variant="body1" gutterBottom className="user-name-field">
           {prop.userName}
         </Typography>
         <Typography variant="body2" gutterBottom>

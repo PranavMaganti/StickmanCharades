@@ -9,7 +9,7 @@ import { useState } from "react";
 import { IPoint } from "./stage/IPoint";
 import { Shape } from "./stage/Shape";
 import socket from "./socket";
-import { Button } from "@material-ui/core";
+import { Button, Typography } from "@material-ui/core";
 
 class Point {
   x: number;
@@ -189,7 +189,7 @@ export default function StickmanComponent() {
   return (
     <div>
       <div className="flex-col">
-        <p className="hint_text">{guessHint}</p>
+        <Typography className="hint_text">{guessHint}</Typography>
         <Button
           variant="contained"
           color="secondary"
