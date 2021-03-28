@@ -25,8 +25,16 @@ app.use(function (req, res, next) {
 io.on("connection", (socket: Socket) => {
   console.log("Some client connected");
   socket.on("chat", (message) => {
-    console.log(message);
-    io.emit("chat", { message, id: socket.id });
+    var currentUser = users.get(socket.id);
+    if (currentUser) {
+      currentUser.lastGuess = message;
+      console.log(socket.id + ": " + message);
+      io.emit("chat", {
+        message: currentUser.userName + ": " + message,
+        id: socket.id,
+      });
+      io.emit("users", Array.from(users.values()));
+    }
   });
   socket.on("requestJoinRoom", (userName: String) => {
     console.log("Connection Attempt: " + userName);
