@@ -187,13 +187,16 @@ export default function StickmanComponent() {
 
   return (
     <div>
-      <Button
-        variant="contained"
-        color="secondary"
-        onClick={() => resetSprite()}
-      >
-        RESET
-      </Button>
+      <div className="flex-col">
+        <p>_ _ _ _</p>
+        <Button
+          variant="contained"
+          color="secondary"
+          onClick={() => resetSprite()}
+        >
+          RESET
+        </Button>
+      </div>
       <Sketch
         setup={setup}
         draw={draw}

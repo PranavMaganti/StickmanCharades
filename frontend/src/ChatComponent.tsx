@@ -105,6 +105,18 @@ export default function ChatComponent() {
         </form>
       </Card>
       <div>
+        <Button
+          className="game-start"
+          onClick={() => {
+            true;
+          }}
+          variant="contained"
+          color="secondary"
+        >
+          START
+        </Button>
+      </div>
+      <div>
         {chats.map((value, index) => {
           return (
             <p
@@ -119,5 +131,3 @@ export default function ChatComponent() {
     </div>
   );
 }
-
-// ReactDOM.render(<ChatComponent />, document.getElementById("root"));
