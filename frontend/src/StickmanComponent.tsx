@@ -106,7 +106,7 @@ export default function StickmanComponent() {
     Stage.generateStickman(center.x, center.y, STICKMAN_LENGTH)
   );
   const [selectedNode, setSelectedNode] = useState<IPoint>();
-  const [wordHint, setWordHint] = useState("Room Code");
+  const [wordHint, setWordHint] = useState("Room Code: W3z90");
   const [isGuesser, setIsGuesser] = useState(true);
 
   useEffect(() => {
@@ -199,7 +199,9 @@ export default function StickmanComponent() {
   return (
     <div>
       <div className="flex-col">
-        <Typography className="hint_text">{wordHint}</Typography>
+        <Typography variant="h3" className="hint_text">
+          {wordHint}
+        </Typography>
         <Button
           variant="contained"
           color="secondary"
