@@ -7,6 +7,7 @@ import { SpriteNode } from "./stage/SpriteNode";
 import { Sprite } from "./stage/Sprite";
 import { useState } from "react";
 import { IPoint } from "./stage/IPoint";
+import { Shape } from "./stage/Shape";
 
 class Point {
   x: number;
@@ -28,9 +29,11 @@ function drawSprite(
   y: number,
   color: string = "#FF0000"
 ) {
+  p5.push();
   p5.strokeWeight(2);
   p5.fill(color);
   p5.ellipse(x, y, 20, 20);
+  p5.pop();
 }
 
 function drawSpriteNodes(
@@ -41,7 +44,21 @@ function drawSpriteNodes(
 ) {
   sprites.forEach((element) => {
     p5.strokeWeight(5);
-    p5.line(currX, currY, element.getX(), element.getY());
+    p5.noFill();
+    switch (element.limbShape) {
+      case Shape.Line: {
+        p5.line(currX, currY, element.getX(), element.getY());
+        break;
+      }
+      case Shape.Circle: {
+        p5.circle(
+          (currX + element.getX()) / 2,
+          (currY + element.getY()) / 2,
+          element.length
+        );
+        break;
+      }
+    }
     drawSpriteNodes(p5, element.getX(), element.getY(), element.children);
     drawSprite(p5, element.getX(), element.getY());
   });

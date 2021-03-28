@@ -1,4 +1,5 @@
 import { IPoint } from "./IPoint";
+import { Shape } from "./Shape";
 
 export { SpriteNode };
 
@@ -6,14 +7,16 @@ class SpriteNode implements IPoint {
   children: SpriteNode[];
   parent: IPoint;
 
+  limbShape: Shape;
   angle: number;
   length: number;
 
-  constructor(parent: IPoint, angle: number, length: number) {
+  constructor(parent: IPoint, angle: number, length: number, limbShape: Shape) {
     this.children = [];
     this.angle = angle % 360;
     this.length = length;
     this.parent = parent;
+    this.limbShape = limbShape;
   }
 
   getSquaredDistanceFrom(x: number, y: number): number {
@@ -47,8 +50,12 @@ class SpriteNode implements IPoint {
     this.length = length;
   }
 
-  addChild(angle: number, length: number): SpriteNode {
-    let newNode = new SpriteNode(this, angle, length);
+  addChild(
+    angle: number,
+    length: number,
+    limbShape: Shape = Shape.Line
+  ): SpriteNode {
+    let newNode = new SpriteNode(this, angle, length, limbShape);
     this.children.push(newNode);
     return newNode;
   }

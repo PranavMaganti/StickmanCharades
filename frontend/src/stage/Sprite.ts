@@ -1,5 +1,6 @@
 import { SpriteNode } from "./SpriteNode";
 import { IPoint } from "./IPoint";
+import { Shape } from "./Shape";
 
 export { Sprite };
 
@@ -36,8 +37,12 @@ class Sprite implements IPoint {
     this.rootY = newY;
   }
 
-  addChild(angle: number, length: number): SpriteNode {
-    let newNode = new SpriteNode(this, angle, length);
+  addChild(
+    angle: number,
+    length: number,
+    limbShape: Shape = Shape.Line
+  ): SpriteNode {
+    let newNode = new SpriteNode(this, angle, length, limbShape);
     this.sprites.push(newNode);
     return newNode;
   }

@@ -1,3 +1,4 @@
+import { Shape } from "./Shape";
 import { Sprite } from "./Sprite";
 
 export default class Stage {
@@ -16,7 +17,7 @@ export default class Stage {
 
     let chest = root.addChild(0, length);
     let neck = chest.addChild(0, length);
-    neck.addChild(0, length); // head
+    neck.addChild(0, length, Shape.Circle); // head
 
     let elbowL = neck.addChild(225, length);
     let elbowR = neck.addChild(135, length);
