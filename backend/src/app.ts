@@ -13,7 +13,34 @@ const io = require("socket.io")(server, {
 });
 const users: Map<String, UserData> = new Map();
 
-const words: string[] = ["climbing", "boxing", "disco", "eating", "yoga"];
+const words: string[] = [
+  "climbing",
+  "boxing",
+  "disco",
+  "eating",
+  "yoga",
+  "sword fight",
+  "floss",
+  "blowing a kiss",
+  "tripping",
+  "salute",
+  "taking a phone call",
+  "hopping",
+  "dog",
+  "ymca",
+  "hurricane",
+  "heads shoulders knees and toes",
+  "macarena",
+  "praying",
+  "air guitar",
+  "distraught",
+  "begging",
+  "coughing",
+  "stretching",
+  "superman",
+  "teapot",
+  "elderly",
+];
 let currentWord: string = "";
 
 let gameStarted: boolean = false;
@@ -27,6 +54,41 @@ function shuffle(a: String[]): String[] {
     [a[i], a[j]] = [a[j], a[i]];
   }
   return a;
+}
+
+function chooseWordAndSendToUsers() {
+  remainingPlayersGuessing = usersPlayOrder.length - 1;
+  currentWord = words[Math.floor(Math.random() * words.length)];
+  let blankedWord = "";
+  for (var x = 0, c = ""; (c = currentWord.charAt(x)); x++) {
+    blankedWord += c == " " ? " " : "_ ";
+  }
+  const player = users.get(usersPlayOrder[currentPlayer]);
+
+  if (player) {
+    player.isGuesser = true;
+  }
+
+  Array.from(users.values()).forEach((it) => {
+    it.resetRound();
+  });
+
+  io.to(usersPlayOrder[currentPlayer]).emit("startRound", {
+    type: "player",
+    word: currentWord,
+  });
+
+  Array.from(users.keys())
+    .filter((it) => it != usersPlayOrder[currentPlayer])
+    .forEach((element) => {
+      console.log("Starting round for: ", element);
+      io.to(element).emit("startRound", {
+        type: "guesser",
+        word: blankedWord,
+      });
+    });
+
+  io.emit("users", Array.from(users.values()));
 }
 
 app.use("/", express.static(path.resolve(__dirname, "../../frontend/build")));
@@ -43,30 +105,10 @@ app.use(function (req, res, next) {
 io.on("connection", (socket: Socket) => {
   console.log("Some client connected");
   socket.on("startGame", () => {
-    if (gameStarted == false) {
+    if (!gameStarted) {
       usersPlayOrder = shuffle(Array.from(users.keys()));
       gameStarted = true;
-      remainingPlayersGuessing = usersPlayOrder.length - 1;
-      currentWord = words[Math.floor(Math.random() * words.length)];
-      let blankedWord = "";
-      for (var x = 0, c = ""; (c = currentWord.charAt(x)); x++) {
-        blankedWord += c == " " ? " " : "_ ";
-      }
-
-      io.to(usersPlayOrder[currentPlayer]).emit("startRound", {
-        type: "player",
-        word: currentWord,
-      });
-
-      Array.from(users.keys())
-        .filter((it) => it != usersPlayOrder[currentPlayer])
-        .forEach((element) => {
-          console.log("Starting round for: ", element);
-          io.to(element).emit("startRound", {
-            type: "guesser",
-            word: blankedWord,
-          });
-        });
+      chooseWordAndSendToUsers();
     }
   });
 
@@ -83,38 +125,22 @@ io.on("connection", (socket: Socket) => {
         if (message.toLowerCase() == currentWord.toLowerCase()) {
           currentUser.guessed = true;
           remainingPlayersGuessing -= 1;
-          currentUser.score += 10;
 
-          if (remainingPlayersGuessing == 0) {
+          currentUser.incrementScore(10);
+          var currentDrawer = users.get(usersPlayOrder[currentPlayer]);
+          if (currentDrawer) {
+            currentDrawer.incrementScore(5);
+          }
+
+          if (remainingPlayersGuessing <= 0) {
             currentPlayer = (currentPlayer + 1) % usersPlayOrder.length;
-            remainingPlayersGuessing = usersPlayOrder.length - 1;
-
-            currentWord = words[Math.floor(Math.random() * words.length)];
-            let blankedWord = "";
-            for (var x = 0, c = ""; (c = currentWord.charAt(x)); x++) {
-              blankedWord += c == " " ? " " : "_ ";
-            }
-            io.to(usersPlayOrder[currentPlayer]).emit("startRound", {
-              type: "player",
-              word: currentWord,
-            });
-
-            Array.from(users.keys())
-              .filter((it) => it != usersPlayOrder[currentPlayer])
-              .forEach((element) => {
-                console.log("Starting round for: ", element);
-                io.to(element).emit("startRound", {
-                  type: "guesser",
-                  word: blankedWord,
-                });
-              });
+            chooseWordAndSendToUsers();
           }
         } else {
           currentUser.lastGuess = message;
         }
       }
     }
-    io.emit("users", Array.from(users.values()));
   });
 
   socket.on("requestJoinRoom", (userName: String) => {
@@ -142,6 +168,10 @@ io.on("connection", (socket: Socket) => {
       delete usersPlayOrder[removeIndex];
       if (removeIndex == currentPlayer) {
         // TODO: Some logic to reset the turn and go onto the next player
+      }
+
+      if (users.size < 2) {
+        gameStarted = false;
       }
 
       io.emit("users", Array.from(users.values()));

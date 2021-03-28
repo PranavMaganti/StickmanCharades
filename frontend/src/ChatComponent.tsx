@@ -59,8 +59,7 @@ export default function ChatComponent() {
     socket.on("userComplete", (username: string, id: string) => {
       users.forEach((it) => {
         if (it.userName == username) {
-          it.lastGuess = "";
-          it.guessed = true;
+          it.resetRound();
         }
       });
 
@@ -72,6 +71,7 @@ export default function ChatComponent() {
     return () => {
       socket.off("chat");
       socket.off("users");
+      socket.off("userComplete");
     };
   });
 
@@ -80,7 +80,6 @@ export default function ChatComponent() {
     socket.emit("chat", chatMessage);
     setChatMessage("");
   };
-  console.log(users);
 
   return (
     <div>
@@ -120,7 +119,6 @@ export default function ChatComponent() {
             onClick={(e) => submitGuess(e)}
             variant="outlined"
             color="secondary"
-            disabled={userGuessed || !isGuesser}
           >
             Enter
           </Button>

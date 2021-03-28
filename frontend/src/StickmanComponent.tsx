@@ -121,9 +121,10 @@ export default function StickmanComponent() {
     );
 
     socket.on("startRound", (data: { type: string; word: string }) => {
-      console.log(data);
+      setStickmanSprite(
+        Stage.generateStickman(center.x, center.y, STICKMAN_LENGTH)
+      );
       setIsGuesser(data.type == "guesser");
-      console.log(isGuesser);
       setWordHint(data.word);
     });
 
@@ -194,20 +195,6 @@ export default function StickmanComponent() {
     setStickmanSprite(newMan);
     socket.emit("stickmanEmitMove", newMan.toJson());
   };
-
-  // let sketch;
-  // if (!isGuesser) {
-  //   sketch = (
-  //     <Sketch
-  //       setup={setup}
-  //       draw={draw}
-  //       mouseDragged={onDrag}
-  //       mousePressed={onClick}
-  //     />
-  //   );
-  // } else {
-  //   sketch = <Sketch setup={setup} draw={draw} />;
-  // }
 
   return (
     <div>
