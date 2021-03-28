@@ -10,7 +10,7 @@ const io = require("socket.io")(server, {
     methods: ["GET", "POST"],
   },
 });
-const users:Set<String> = new Set();
+const users: Map<String, String> = new Map();
 
 app.use(function (req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
@@ -29,12 +29,18 @@ io.on("connection", (socket: Socket) => {
   });
   socket.on("requestJoinRoom", (userName: String) => {
     console.log("Connection Attempt: " + userName);
-    if (users.has(userName)) {
+    if (Array.from(users.values()).includes(userName)) {
       socket.emit("joinRoom", { canJoin: false });
     } else {
-      users.add(userName);
+      users.set(socket.id, userName);
       socket.emit("joinRoom", { canJoin: true });
-      io.emit("users", Array.from(users));
+      io.emit("users", Array.from(users.values()));
+    }
+  });
+  socket.on("disconnect", (reason) => {
+    if (Array.from(users.keys()).includes(socket.id)) {
+      users.delete(socket.id);
+      io.emit("users", Array.from(users.values()));
     }
   });
 });
