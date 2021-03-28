@@ -79,7 +79,9 @@ export default function MainPage() {
               variant="contained"
               color="secondary"
               onClick={() => {
-                socket.emit("requestJoinRoom", userName);
+                if (userName != "") {
+                  socket.emit("requestJoinRoom", userName);
+                }
               }}
             >
               Join Game

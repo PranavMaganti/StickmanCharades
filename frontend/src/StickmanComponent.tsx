@@ -97,6 +97,8 @@ function getClosestSprite(
 }
 
 export default function StickmanComponent() {
+  const [guessHint] = useState("Room Code");
+
   const center = useMemo<Point>(
     () => new Point(CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2),
     []
@@ -184,11 +186,10 @@ export default function StickmanComponent() {
     setStickmanSprite(newMan);
     socket.emit("stickmanEmitMove", newMan.toJson());
   };
-
   return (
     <div>
       <div className="flex-col">
-        <p>_ _ _ _</p>
+        <p className="hint_text">{guessHint}</p>
         <Button
           variant="contained"
           color="secondary"
