@@ -1,9 +1,13 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import GamePage from "./Pages/GamePage";
 import MainPage from "./Pages/MainPage";
 
 export default function App() {
+  useEffect(() => {
+    document.title = "Charades.me!";
+  }, []);
+
   return (
     <Router>
       {/* A <Switch> looks through its children <Route>s and
