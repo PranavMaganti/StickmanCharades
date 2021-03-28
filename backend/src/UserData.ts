@@ -12,4 +12,8 @@ export default class UserData {
   incrementScore(gain: number) {
     this.score += gain;
   }
+
+  resetScore() {
+    this.score = 0;
+  }
 }
