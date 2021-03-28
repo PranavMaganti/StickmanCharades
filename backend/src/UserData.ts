@@ -8,4 +8,8 @@ export default class UserData {
     this.lastGuess = "";
     this.score = 0;
   }
+
+  incrementScore(gain: number) {
+    this.score += gain;
+  }
 }
