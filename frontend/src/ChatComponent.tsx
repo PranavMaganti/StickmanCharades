@@ -4,6 +4,7 @@ import { Card } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import socket from "./socket";
 import User from "./User";
+import UserData from "../../backend/src/UserData";
 import { TextField, Button } from "@material-ui/core";
 class ChatMessage {
   senderId: string;
@@ -37,6 +38,7 @@ export default function ChatComponent() {
   const [chatMessage, setChatMessage] = useState("");
   const emptyChats: ChatMessage[] = [];
   const [chats, setChats] = useState(emptyChats);
+  const [users, setUsers] = useState<Array<UserData>>([]);
   const classes = useStyles();
 
   useEffect(() => {
@@ -44,8 +46,13 @@ export default function ChatComponent() {
       setChats([...chats, new ChatMessage(data.id, data.message)]);
     });
 
+    socket.on("users", (serverUsers: Array<UserData>) => {
+      setUsers(serverUsers);
+    });
+
     return () => {
       socket.off("chat");
+      socket.off("users");
     };
   });
 
@@ -54,18 +61,23 @@ export default function ChatComponent() {
     socket.emit("chat", chatMessage);
     setChatMessage("");
   };
+  console.log(users);
 
   return (
     <div>
-      <Card className={classes.marginAndPadding} variant="outlined">
-        <User />
-      </Card>
-      <Card className={classes.marginAndPadding} variant="outlined">
-        <User />
-      </Card>
-      <Card className={classes.marginAndPadding} variant="outlined">
-        <User />
-      </Card>
+      {users.map((user: UserData, index: any) => (
+        <Card
+          className={classes.marginAndPadding}
+          variant="outlined"
+          key={index}
+        >
+          <User
+            userName={user.userName}
+            lastGuess={user.lastGuess}
+            key={index}
+          />
+        </Card>
+      ))}
 
       <Card className={classes.chatContainer} variant="outlined">
         <form className="chat-form">

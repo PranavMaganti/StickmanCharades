@@ -16,17 +16,17 @@ const useStyles = makeStyles({
   },
 });
 
-export default function User() {
+export default function User(prop: { userName: String; lastGuess: String }) {
   const classes = useStyles();
   return (
     <div className="flex-row">
-      <Avatar>D</Avatar>
+      <Avatar>{prop.userName.charAt(0)}</Avatar>
       <div className={[classes.leftMargin, "flex-col"].join(" ")}>
         <Typography variant="body1" gutterBottom>
-          Dave
+          {prop.userName}
         </Typography>
         <Typography variant="body2" gutterBottom>
-          Most recent guess: Chicken!
+          Most recent guess: {prop.lastGuess}
         </Typography>
       </div>
     </div>

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { useHistory } from "react-router-dom";
 import {
@@ -34,8 +34,18 @@ const useStyles = makeStyles({
 export default function MainPage() {
   const [userName, setUserName] = useState("");
   const [roomCode, setRoomCode] = useState("");
+  const [validUsername, setValidUsername] = useState(true);
   const history = useHistory();
   const classes = useStyles();
+  useEffect(() => {
+    socket.on("joinRoom", (arg: { canJoin: boolean }) => {
+      if (arg.canJoin) {
+        history.push("/play");
+      } else {
+        setValidUsername(false);
+      }
+    });
+  });
 
   return (
     <Container maxWidth="xs" className={classes.hugeTopMargin}>
@@ -47,6 +57,10 @@ export default function MainPage() {
           <form className="input-fields">
             <TextField
               className={classes.bothMargin}
+              error={!validUsername}
+              helperText={
+                !validUsername ? "The username is already in use" : ""
+              }
               defaultValue="PlayerX"
               label="Nickname"
               value={userName}
@@ -65,8 +79,7 @@ export default function MainPage() {
               variant="contained"
               color="secondary"
               onClick={() => {
-                socket.connect();
-                history.push("/play");
+                socket.emit("requestJoinRoom", userName);
               }}
             >
               Join Game
