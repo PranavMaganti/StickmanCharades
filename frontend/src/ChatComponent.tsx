@@ -60,7 +60,7 @@ export default function ChatComponent() {
       users.forEach((it) => {
         if (it.userName == username) {
           it.lastGuess = "";
-          it.guessedCorrect = true;
+          it.guessed = true;
         }
       });
 
@@ -94,7 +94,7 @@ export default function ChatComponent() {
             userName={user.userName}
             lastGuess={user.lastGuess}
             score={user.score}
-            guessedCorrect={user.guessedCorrect}
+            guessedCorrect={user.guessed}
             key={index}
           />
         </Card>
@@ -110,7 +110,7 @@ export default function ChatComponent() {
             value={chatMessage}
             onChange={(e) => setChatMessage(e.target.value)}
             onKeyPress={(ev) => {
-              if (ev.key === "Enter") {
+              if (ev.key === "Enter" && !(userGuessed || !isGuesser)) {
                 submitGuess(ev);
               }
             }}
