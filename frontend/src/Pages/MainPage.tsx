@@ -48,12 +48,12 @@ export default function MainPage() {
   });
 
   return (
-    <Container maxWidth="xs" className={classes.hugeTopMargin}>
+    <Container maxWidth="sm" className={classes.hugeTopMargin}>
       <Card variant="outlined">
         <Typography variant="h3" className={classes.topMargin}>
           charades.me
         </Typography>
-        <Container maxWidth="xs">
+        <Container maxWidth="sm">
           <form className="input-fields">
             <TextField
               className={classes.bothMargin}
