@@ -39,6 +39,7 @@ io.on("connection", (socket: Socket) => {
       io.emit("users", Array.from(users.values()));
     }
   });
+  
   socket.on("requestJoinRoom", (userName: String) => {
     console.log("Connection Attempt: " + userName);
     if (
