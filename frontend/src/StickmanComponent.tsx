@@ -48,6 +48,7 @@ function drawSpriteNodes(
     switch (element.limbShape) {
       case Shape.Line: {
         p5.line(currX, currY, element.getX(), element.getY());
+
         break;
       }
       case Shape.Circle: {
