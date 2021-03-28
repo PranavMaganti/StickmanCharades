@@ -123,6 +123,7 @@ export default function StickmanComponent() {
     socket.on("startRound", (data: { type: string; word: string }) => {
       console.log(data);
       setIsGuesser(data.type == "guesser");
+      console.log(isGuesser);
       setWordHint(data.word);
     });
 
@@ -194,19 +195,19 @@ export default function StickmanComponent() {
     socket.emit("stickmanEmitMove", newMan.toJson());
   };
 
-  let sketch;
-  if (!isGuesser) {
-    sketch = (
-      <Sketch
-        setup={setup}
-        draw={draw}
-        mouseDragged={onDrag}
-        mousePressed={onClick}
-      />
-    );
-  } else {
-    sketch = <Sketch setup={setup} draw={draw} />;
-  }
+  // let sketch;
+  // if (!isGuesser) {
+  //   sketch = (
+  //     <Sketch
+  //       setup={setup}
+  //       draw={draw}
+  //       mouseDragged={onDrag}
+  //       mousePressed={onClick}
+  //     />
+  //   );
+  // } else {
+  //   sketch = <Sketch setup={setup} draw={draw} />;
+  // }
 
   return (
     <div>
@@ -220,7 +221,16 @@ export default function StickmanComponent() {
           RESET
         </Button>
       </div>
-      {sketch}
+      {!isGuesser ? (
+        <Sketch
+          setup={setup}
+          draw={draw}
+          mouseDragged={onDrag}
+          mousePressed={onClick}
+        />
+      ) : (
+        <Sketch setup={setup} draw={draw} />
+      )}
     </div>
   );
 }
