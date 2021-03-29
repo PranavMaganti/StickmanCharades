@@ -1,7 +1,9 @@
 import { io } from "socket.io-client";
 
-// const port = process.env.PORT || 5000;
-const URL = "http://localhost:5000/";
+const heroku = process.env.heroku == "true";
+const URL = heroku
+  ? "https://stickman-charades.herokuapp.com/"
+  : "http://localhost:5000";
 const socket = io(URL, { autoConnect: false });
 
 socket.onAny((event, ...args) => {

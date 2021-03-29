@@ -14,6 +14,7 @@ export class SocketReceiveLabel {
 
 export class SocketSendLabel {
   static CreateRoom = "createRoomSuccess"
+  static Chat = "chat"
 
   static EndGame = "endGame";
   static StartGame = "startGame";

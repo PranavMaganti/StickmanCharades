@@ -33,25 +33,32 @@ server.listen(port, () => {
 });
 
 const games = new Map<string, GameState>();
-const idGameMap = new Map<string, string>();
+const idGameMap = new Map<string, GameState>();
 var roomId = 0;
 
 io.on(SocketReceiveLabel.Connect, (socket: Socket) => {
   console.log("Some client connected");
   socket.on(SocketReceiveLabel.Disconnect, (reason) => {
-    const gameId = idGameMap.get(socket.id);
-    if (gameId != undefined && games.has(gameId)) {
-      const game = games.get(gameId)!!;
+    const game = idGameMap.get(socket.id);
+    if (game != undefined) {
       game.removeUser(socket.id);
       idGameMap.delete(socket.id);
 
       if (game.users.length <= 0) {
-        games.delete(gameId);
+        games.delete(game.gameId);
       }
     }
   });
 
-  socket.on(SocketReceiveLabel.Chat, (message) => {});
+  socket.on(SocketReceiveLabel.Chat, (message) => {
+    const game = idGameMap.get(socket.id)!!;
+    if (game.inProgress) {
+      game.checkUserGuess(message, socket.id, 60);
+    } else {
+      io.emit(SocketSendLabel.Chat, message);
+    }
+  });
+
   socket.on(
     SocketReceiveLabel.JoinRoom,
     (data: { username: string; roomId: string }) => {
@@ -88,7 +95,7 @@ io.on(SocketReceiveLabel.Connect, (socket: Socket) => {
     const newGame = new GameState(io, newGameId);
     newGame.addUser(socket.id, username);
     games.set(newGameId, newGame);
-    idGameMap.set(socket.id, newGameId);
+    idGameMap.set(socket.id, newGame);
 
     console.log("Created Room: ", newGameId);
     socket.emit(SocketSendLabel.CreateRoom, newGameId);
@@ -99,6 +106,9 @@ io.on(SocketReceiveLabel.Connect, (socket: Socket) => {
   });
 
   socket.on(SocketReceiveLabel.StickmanMove, (message) => {
-    io.emit(SocketSendLabel.StickmanMove, { message: message, id: socket.id });
+    io.to(idGameMap.get(socket.id)?.gameId).emit(SocketSendLabel.StickmanMove, {
+      message: message,
+      id: socket.id,
+    });
   });
 });
