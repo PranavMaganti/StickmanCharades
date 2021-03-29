@@ -59,7 +59,7 @@ class Sprite implements IPoint {
     this.rootY = newY;
   }
 
-  addChildNode(node: SpriteNode) {
+  addChildNode(node: SpriteNode): void {
     this.sprites.push(node);
   }
 
@@ -68,7 +68,7 @@ class Sprite implements IPoint {
     length: number,
     limbShape: Shape = Shape.Line
   ): SpriteNode {
-    let newNode = new SpriteNode(this, angle, length, limbShape);
+    const newNode = new SpriteNode(this, angle, length, limbShape);
     this.sprites.push(newNode);
     return newNode;
   }

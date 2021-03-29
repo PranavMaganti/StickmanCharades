@@ -31,7 +31,7 @@ const useStyles = makeStyles({
   },
 });
 
-export default function MainPage() {
+export default function MainPage(): React.ReactElement {
   const [username, setUserName] = useState("");
   const [roomCode, setRoomCode] = useState("");
 

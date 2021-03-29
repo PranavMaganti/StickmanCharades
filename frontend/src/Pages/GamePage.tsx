@@ -24,7 +24,7 @@ const useStyles = makeStyles({
   },
 });
 
-export default function GamePage() {
+export default function GamePage(): React.ReactElement {
   const classes = useStyles();
 
   return (

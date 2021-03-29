@@ -26,12 +26,7 @@ const STICKMAN_LENGTH = 60;
 const CANVAS_WIDTH = 1000;
 const CANVAS_HEIGHT = 1000;
 
-function drawSprite(
-  p5: p5Types,
-  x: number,
-  y: number,
-  color: string = "#FF0000"
-) {
+function drawSprite(p5: p5Types, x: number, y: number, color = "#FF0000") {
   p5.push();
   p5.strokeWeight(2);
   p5.fill(color);
@@ -97,7 +92,7 @@ function getClosestSprite(
   return closestNode;
 }
 
-export default function StickmanComponent() {
+export default function StickmanComponent(): React.ReactElement {
   const { gameId } = useParams<{ gameId: string }>();
 
   const center = useMemo<Point>(
@@ -115,8 +110,8 @@ export default function StickmanComponent() {
     socket.on(
       "stickmanReceiveMove",
       (data: { message: string; id: string }) => {
-        const sprite: Sprite = Sprite.fromJson(data.message);
         if (socket.id != data.id) {
+          const sprite: Sprite = Sprite.fromJson(data.message);
           setStickmanSprite(sprite);
         }
       }
@@ -136,13 +131,16 @@ export default function StickmanComponent() {
   });
 
   const onClick = (p5: p5Types) => {
-    let closestChild = getClosestSprite(
+    const closestChild = getClosestSprite(
       p5.mouseX,
       p5.mouseY,
       stickmanSprite.sprites
     );
-    let closestDist = closestChild.getSquaredDistanceFrom(p5.mouseX, p5.mouseY);
-    let parentDist = stickmanSprite.getSquaredDistanceFrom(
+    const closestDist = closestChild.getSquaredDistanceFrom(
+      p5.mouseX,
+      p5.mouseY
+    );
+    const parentDist = stickmanSprite.getSquaredDistanceFrom(
       p5.mouseX,
       p5.mouseY
     );
@@ -192,7 +190,7 @@ export default function StickmanComponent() {
   };
 
   const resetSprite = () => {
-    let newMan = Stage.generateStickman(center.x, center.y, STICKMAN_LENGTH);
+    const newMan = Stage.generateStickman(center.x, center.y, STICKMAN_LENGTH);
     setStickmanSprite(newMan);
     socket.emit("stickmanEmitMove", newMan.toJson());
   };

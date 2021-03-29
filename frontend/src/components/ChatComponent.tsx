@@ -36,7 +36,7 @@ const useStyles = makeStyles({
   },
 });
 
-export default function ChatComponent() {
+export default function ChatComponent(): React.ReactElement {
   const classes = useStyles();
 
   const [chatMessage, setChatMessage] = useState("");
@@ -47,6 +47,9 @@ export default function ChatComponent() {
 
   useEffect(() => {
     socket.emit("getUsers", gameId);
+  }, [gameId]);
+
+  useEffect(() => {
     socket.on("chat", (data: { id: string; message: string }) => {
       setChats([...chats, new ChatMessage(data.id, data.message)]);
     });
@@ -61,7 +64,7 @@ export default function ChatComponent() {
     };
   });
 
-  const submitGuess = (e: any) => {
+  const submitGuess = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     e.preventDefault();
     socket.emit("chat", chatMessage);
     setChatMessage("");
@@ -70,7 +73,7 @@ export default function ChatComponent() {
   return (
     <div>
       <>
-        {users.map((user: UserData, index: any) => (
+        {users.map((user: UserData, index: number) => (
           <Card
             className={classes.marginAndPadding}
             variant="outlined"

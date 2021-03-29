@@ -70,16 +70,16 @@ class SpriteNode implements IPoint {
     );
   }
 
-  setAngle(angle: number) {
+  setAngle(angle: number): void {
     angle = angle % 360;
     this.angle = angle - this.parent.getAngle();
   }
 
-  setLength(length: number) {
+  setLength(length: number): void {
     this.length = length;
   }
 
-  addChildNode(node: SpriteNode) {
+  addChildNode(node: SpriteNode): void {
     this.children.push(node);
   }
 
@@ -88,7 +88,7 @@ class SpriteNode implements IPoint {
     length: number,
     limbShape: Shape = Shape.Line
   ): SpriteNode {
-    let newNode = new SpriteNode(this, angle, length, limbShape);
+    const newNode = new SpriteNode(this, angle, length, limbShape);
     this.children.push(newNode);
     return newNode;
   }
