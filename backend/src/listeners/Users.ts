@@ -7,6 +7,6 @@ export function getUsersListener(
   games: Map<string, GameState>
 ) {
   socket.on(SocketReceiveLabel.Users, (gameId) => {
-    socket.emit(SocketSendLabel.Users, games.get(gameId)?.users);
+    socket.emit(SocketSendLabel.Users, games.get(gameId)!.users);
   });
 }

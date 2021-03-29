@@ -1,9 +1,9 @@
-import React from "react";
-import { makeStyles } from "@material-ui/core/styles";
 import { Card } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
+import React, { useEffect, useState } from "react";
 import ChatComponent from "../components/ChatComponent";
-import "../index.css";
 import StickmanComponent from "../components/StickmanComponent";
+import "../index.css";
 
 const useStyles = makeStyles({
   topMargin: {
@@ -25,10 +25,27 @@ const useStyles = makeStyles({
 });
 
 export default function GamePage(): React.ReactElement {
+  const [flexDirection, setFlexDirection] = useState("flex-row");
   const classes = useStyles();
 
+  const resizeListener = () => {
+    if (window.innerHeight > window.innerWidth) {
+      setFlexDirection("flex-col");
+    } else {
+      setFlexDirection("flex-row");
+    }
+  };
+  useEffect(() => {
+    resizeListener();
+    window.addEventListener("resize", resizeListener);
+
+    return () => {
+      window.removeEventListener("resize", resizeListener);
+    };
+  }, []);
+
   return (
-    <div className="play-area">
+    <div className={flexDirection}>
       <Card
         className={[classes.allMargin, "fixed-aspect"].join(" ")}
         variant="outlined"
