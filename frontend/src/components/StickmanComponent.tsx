@@ -173,8 +173,8 @@ export default function StickmanComponent(): React.ReactElement {
   };
 
   const updateCanvasSize = () => {
-    const parent = document.getElementById("stickman-container");
-    const newWidth = parent != null ? parent.clientWidth : 0;
+    const newWidth = document.getElementById("stickman-container")!!
+      .clientWidth;
     const newHeight = newWidth * (9 / 16);
     setCanvasSize({
       width: newWidth,
