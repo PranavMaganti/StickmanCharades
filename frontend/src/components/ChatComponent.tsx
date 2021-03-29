@@ -83,6 +83,10 @@ export default function ChatComponent(): React.ReactElement {
     setChatMessage("");
   };
 
+  const submitForm = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+  };
+
   return (
     <div>
       <>
@@ -113,7 +117,7 @@ export default function ChatComponent(): React.ReactElement {
       </>
 
       <Card className={classes.chatContainer} variant="outlined">
-        <form className="chat-form">
+        <form className="chat-form" onSubmit={(e) => submitForm(e)}>
           <TextField
             variant="outlined"
             color="secondary"
