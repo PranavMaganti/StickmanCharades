@@ -233,6 +233,7 @@ export default function StickmanComponent(): React.ReactElement {
           variant="contained"
           color="secondary"
           onClick={() => resetSprite()}
+          disabled={user?.isGuesser}
         >
           RESET
         </Button>
@@ -241,8 +242,8 @@ export default function StickmanComponent(): React.ReactElement {
         setup={setup}
         draw={draw}
         windowResized={windowResized}
-        mouseDragged={onDrag}
-        mousePressed={onClick}
+        mouseDragged={user?.isGuesser ? () => {} : onDrag}
+        mousePressed={user?.isGuesser ? () => {} : onClick}
       />
     </div>
   );

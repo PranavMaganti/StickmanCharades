@@ -27,6 +27,7 @@
     "react-hooks/exhaustive-deps": "warn",
     "quotes": [2, "double", { "avoidEscape": true }],
     "import/no-named-as-default": 0,
-    "@typescript-eslint/no-non-null-assertion": "off"
+    "@typescript-eslint/no-non-null-assertion": "off",
+    "@typescript-eslint/no-empty-function": "off"
   }
 }
