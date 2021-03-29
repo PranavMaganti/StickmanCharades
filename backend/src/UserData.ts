@@ -5,6 +5,7 @@ export default class UserData {
   score: number;
   guessed: boolean;
   isGuesser: boolean;
+  word: string
 
   constructor(userId: string, username: string) {
     this.userId = userId
@@ -14,6 +15,7 @@ export default class UserData {
     this.lastGuess = "";
     this.guessed = false;
     this.isGuesser = false;
+    this.word = ""
   }
 
   resetUser(isGuesser: boolean) {

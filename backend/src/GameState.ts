@@ -44,7 +44,7 @@ export class GameState {
   guessersLeft: number;
 
   users: UserData[];
-  userIdMap: Map<string, number>;
+  userIdMap: Map<string, UserData>;
   usernameSet: Set<string>;
 
   inProgress: boolean;
@@ -87,11 +87,18 @@ export class GameState {
   startTurn() {
     this.currentWord = words[Math.floor(Math.random() * words.length)];
     this.guessersLeft = this.users.length - 1;
+    const censoredWord = this.censorWord(this.currentWord);
+
     this.users.forEach((it, index) => {
       it.resetUser(index != this.currentPlayer);
+      if (index == this.currentPlayer) {
+        it.word = this.currentWord;
+      } else {
+        it.word = censoredWord;
+      }
     });
 
-    this.users[this.currentPlayer].isGuesser = true
+    this.users[this.currentPlayer].isGuesser = false;
 
     this.emitUsers();
   }
@@ -113,9 +120,10 @@ export class GameState {
     }
     this.usernameSet.add(username);
     const user = new UserData(userId, username);
+    user.word = "Room Code: " + this.gameId;
     this.users.push(user);
     /* TODO: Look into case where multiple people added at the same time */
-    this.userIdMap.set(user.userId, this.users.length);
+    this.userIdMap.set(user.userId, user);
 
     this.guessersLeft += 1;
     this.emitUsers();
@@ -129,6 +137,8 @@ export class GameState {
     for (let it of this.users) {
       if (it.userId == userId) {
         this.users.splice(userIndex, 1);
+        this.userIdMap.delete(userId);
+        this.usernameSet.delete(it.username);
         break;
       }
     }
@@ -142,9 +152,15 @@ export class GameState {
   }
 
   checkUserGuess(guess: string, userId: string, time: number) {
-    const user = this.users[this.userIdMap.get(userId)!!];
+    const user = this.userIdMap.get(userId)!!;
     if (guess == this.currentWord) {
       user.setGuessed(time);
+      this.guessersLeft -= 1;
+
+      if (this.guessersLeft == 0) {
+        this.endTurn();
+        this.startTurn();
+      }
     } else {
       user.lastGuess = guess;
     }
@@ -154,6 +170,21 @@ export class GameState {
 
   private emitUsers() {
     this.socket.to(this.gameId).emit(SocketSendLabel.Users, this.users);
+  }
+
+  private censorWord(word: string): string {
+    var censoredWord = "";
+    for (const c of word) {
+      if (c != " ") {
+        censoredWord += "_ ";
+      } else {
+        console.log("SPACE");
+        // TODO: NOT PRINTING THESE SPACES ON FRONT END
+        censoredWord += " ";
+      }
+    }
+
+    return censoredWord;
   }
 }
 

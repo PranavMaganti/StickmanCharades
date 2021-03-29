@@ -50,6 +50,20 @@
     flex-grow: 100;
 }
 
+.play-area {
+    display: flex;
+    flex-direction: row; /* TODO: change this to column when height>width */
+    height: min-content;
+}
+
+.current-player {
+    background-color: gold;
+}
+
+.guessed-correctly {
+    background-color: green;
+}
+
 #chat-container {
     min-width: 25vw;
 }

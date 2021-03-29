@@ -34,6 +34,12 @@ const useStyles = makeStyles({
     margin: 5,
     padding: 5,
   },
+  currentPlayer: {
+    backgroundColor: "gold",
+  },
+  guessedCorrectly: {
+    backgroundColor: "green",
+  },
 });
 
 export default function ChatComponent(): React.ReactElement {
@@ -42,6 +48,7 @@ export default function ChatComponent(): React.ReactElement {
   const [chatMessage, setChatMessage] = useState("");
   const [chats, setChats] = useState<ChatMessage[]>([]);
   const [users, setUsers] = useState<Array<UserData>>([]);
+  const [user, setUser] = useState<UserData>();
 
   const { gameId } = useParams<{ gameId: string }>();
 
@@ -55,6 +62,12 @@ export default function ChatComponent(): React.ReactElement {
     });
 
     socket.on("setUsers", (serverUsers: Array<UserData>) => {
+      for (const it of serverUsers) {
+        if (it.userId == socket.id) {
+          setUser(it);
+          break;
+        }
+      }
       setUsers(serverUsers);
     });
 
@@ -75,7 +88,15 @@ export default function ChatComponent(): React.ReactElement {
       <>
         {users.map((user: UserData, index: number) => (
           <Card
-            className={classes.marginAndPadding}
+            className={
+              classes.marginAndPadding + " " + user == undefined
+                ? ""
+                : user.isGuesser
+                ? user.guessed
+                  ? classes.guessedCorrectly
+                  : ""
+                : classes.currentPlayer
+            }
             variant="outlined"
             key={index}
           >
@@ -106,6 +127,7 @@ export default function ChatComponent(): React.ReactElement {
             onClick={(e) => submitGuess(e)}
             variant="outlined"
             color="secondary"
+            disabled={!user?.isGuesser || user?.guessed}
           >
             Enter
           </Button>

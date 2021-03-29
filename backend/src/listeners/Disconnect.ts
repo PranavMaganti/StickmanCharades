@@ -4,14 +4,14 @@ import { SocketReceiveLabel } from "../SocketEndpoints";
 
 export default function disconnectListener(
   socket: Socket,
-  idGameMap: Map<string, GameState>,
+  userGameMap: Map<string, GameState>,
   games: Map<string, GameState>
 ) {
   socket.on(SocketReceiveLabel.Disconnect, (reason) => {
-    const game = idGameMap.get(socket.id);
+    const game = userGameMap.get(socket.id);
     if (game != undefined) {
       game.removeUser(socket.id);
-      idGameMap.delete(socket.id);
+      userGameMap.delete(socket.id);
 
       if (game.users.length <= 0) {
         games.delete(game.gameId);

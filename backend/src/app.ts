@@ -8,6 +8,8 @@ import disconnectListener from "./listeners/Disconnect";
 import { createRoomListener, joinRoomListener } from "./listeners/Room";
 import { stickmanMoveListener } from "./listeners/Stickman";
 import { getUsersListener } from "./listeners/Users";
+import { startGameListener } from "./listeners/Game";
+import SocketIO from "socket.io";
 
 const port = process.env.PORT || 5000;
 const app = express();
@@ -38,17 +40,19 @@ server.listen(port, () => {
 });
 
 const games = new Map<string, GameState>();
-const idGameMap = new Map<string, GameState>();
+const userGameMap = new Map<string, GameState>();
 
 io.on(SocketReceiveLabel.Connect, (socket: Socket) => {
   console.log("Some client connected");
-  disconnectListener(socket, idGameMap, games);
+  disconnectListener(socket, userGameMap, games);
 
-  joinRoomListener(socket, idGameMap, games);
-  createRoomListener(socket, io, idGameMap, games);
+  joinRoomListener(socket, userGameMap, games);
+  createRoomListener(socket, io, userGameMap, games);
 
-  stickmanMoveListener(socket, io, idGameMap);
-  chatListener(socket, io, idGameMap);
+  stickmanMoveListener(socket, io, userGameMap);
+  chatListener(socket, io, userGameMap);
 
   getUsersListener(socket, games);
+
+  startGameListener(socket, userGameMap);
 });
