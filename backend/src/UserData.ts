@@ -1,12 +1,12 @@
 export default class UserData {
   userId: string
-  username: String;
-  lastGuess: String;
+  username: string;
+  lastGuess: string;
   score: number;
   guessed: boolean;
   isGuesser: boolean;
 
-  constructor(userId: string, username: String) {
+  constructor(userId: string, username: string) {
     this.userId = userId
     this.username = username;
     this.score = 0;

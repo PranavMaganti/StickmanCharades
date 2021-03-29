@@ -80,6 +80,7 @@ export class GameState {
 
   startGame() {
     this.inProgress = true;
+    this.users = shuffle(this.users);
     this.startTurn();
   }
 
@@ -90,7 +91,9 @@ export class GameState {
       it.resetUser(index != this.currentPlayer);
     });
 
-    this.emitUsers()
+    this.users[this.currentPlayer].isGuesser = true
+
+    this.emitUsers();
   }
 
   endTurn(): boolean {
@@ -115,23 +118,27 @@ export class GameState {
     this.userIdMap.set(user.userId, this.users.length);
 
     this.guessersLeft += 1;
-    this.emitUsers()
+    this.emitUsers();
 
     return true;
   }
 
   removeUser(userId: string) {
     this.guessersLeft -= 1;
-    const user = this.users[this.userIdMap.get(userId)!!];
-    const playerIndex = this.users.indexOf(user);
-
-    delete this.users[playerIndex];
+    var userIndex = -1;
+    for (let it of this.users) {
+      if (it.userId == userId) {
+        this.users.splice(userIndex, 1);
+        break;
+      }
+    }
+    console.log(userIndex);
 
     // Decrement this as we have removed the player at the currentPlayer index
     this.currentPlayer -= 1;
     this.endTurn();
 
-    this.emitUsers()
+    this.emitUsers();
   }
 
   checkUserGuess(guess: string, userId: string, time: number) {
@@ -150,7 +157,7 @@ export class GameState {
   }
 }
 
-function shuffle(a: String[]): String[] {
+function shuffle<T>(a: T[]): T[] {
   for (let i = a.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [a[i], a[j]] = [a[j], a[i]];
