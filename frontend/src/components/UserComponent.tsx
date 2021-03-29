@@ -21,6 +21,7 @@ export default function User(prop: {
   lastGuess: string;
   score: number;
   guessedCorrect: boolean;
+  isGuesser: boolean;
 }): React.ReactElement {
   const classes = useStyles();
   return (
@@ -37,7 +38,11 @@ export default function User(prop: {
           Score: {prop.score}
         </Typography>
         <Typography variant="body2" gutterBottom>
-          {prop.guessedCorrect ? "Guessed Correctly" : "Still Guessing"}
+          {prop.isGuesser
+            ? prop.guessedCorrect
+              ? "Guessed Correctly"
+              : "Still Guessing"
+            : "Current Player"}
         </Typography>
       </div>
     </div>

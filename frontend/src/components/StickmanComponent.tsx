@@ -11,6 +11,7 @@ import { Shape } from "../stage/Shape";
 import socket from "../socket";
 import { Button, Typography } from "@material-ui/core";
 import { useParams } from "react-router-dom";
+import UserData from "../../../backend/src/UserData";
 
 class Point {
   x: number;
@@ -103,7 +104,11 @@ export default function StickmanComponent(): React.ReactElement {
     Stage.generateStickman(center.x, center.y, STICKMAN_LENGTH)
   );
   const [selectedNode, setSelectedNode] = useState<IPoint>();
-  const [wordHint, setWordHint] = useState("Room Code: " + gameId);
+  const [user, setUser] = useState<UserData>();
+
+  useEffect(() => {
+    socket.emit("getUsers", gameId);
+  }, [gameId]);
 
   useEffect(() => {
     socket.on(
@@ -116,11 +121,19 @@ export default function StickmanComponent(): React.ReactElement {
       }
     );
 
-    socket.on("startRound", (data: { type: string; word: string }) => {
+    socket.on("setUsers", (serverUsers: Array<UserData>) => {
+      for (const it of serverUsers) {
+        if (it.userId == socket.id) {
+          setUser(it);
+          break;
+        }
+      }
+    });
+
+    socket.on("startRound", () => {
       setStickmanSprite(
         Stage.generateStickman(center.x, center.y, STICKMAN_LENGTH)
       );
-      setWordHint(data.word);
     });
 
     return () => {
@@ -214,7 +227,7 @@ export default function StickmanComponent(): React.ReactElement {
     <div>
       <div className="flex-col">
         <Typography variant="h3" className="hint_text">
-          {wordHint}
+          {user?.word}
         </Typography>
         <Button
           variant="contained"

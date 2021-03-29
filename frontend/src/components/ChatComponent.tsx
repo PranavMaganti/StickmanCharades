@@ -84,6 +84,7 @@ export default function ChatComponent(): React.ReactElement {
               lastGuess={user.lastGuess}
               score={user.score}
               guessedCorrect={user.guessed}
+              isGuesser={user.isGuesser}
               key={index}
             />
           </Card>
