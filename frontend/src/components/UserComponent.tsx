@@ -1,5 +1,5 @@
 import React from "react";
-import "./index.css";
+import "../index.css";
 import { makeStyles } from "@material-ui/core/styles";
 import { Avatar, Typography } from "@material-ui/core";
 
@@ -17,11 +17,11 @@ const useStyles = makeStyles({
 });
 
 export default function User(prop: {
-  userName: String;
-  lastGuess: String;
-  score: Number;
+  userName: string;
+  lastGuess: string;
+  score: number;
   guessedCorrect: boolean;
-}) {
+}): React.ReactElement {
   const classes = useStyles();
   return (
     <div className="flex-row">

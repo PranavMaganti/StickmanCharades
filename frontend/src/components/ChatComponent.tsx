@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
-import "./index.css";
+import "../index.css";
 import { Card } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import socket from "./socket";
-import User from "./User";
-import UserData from "../../backend/src/UserData";
+import socket from "../socket";
+import User from "./UserComponent";
+import UserData from "../../../backend/src/UserData";
 import { TextField, Button } from "@material-ui/core";
+import { useParams } from "react-router-dom";
+
 class ChatMessage {
   senderId: string;
   message: string;
@@ -34,48 +36,35 @@ const useStyles = makeStyles({
   },
 });
 
-export default function ChatComponent() {
-  const [chatMessage, setChatMessage] = useState("");
-  const emptyChats: ChatMessage[] = [];
-  const [chats, setChats] = useState(emptyChats);
-  const [users, setUsers] = useState<Array<UserData>>([]);
+export default function ChatComponent(): React.ReactElement {
   const classes = useStyles();
-  const [userGuessed, setUserGuessed] = useState(false);
-  const [isGuesser, setIsGuesser] = useState(true);
+
+  const [chatMessage, setChatMessage] = useState("");
+  const [chats, setChats] = useState<ChatMessage[]>([]);
+  const [users, setUsers] = useState<Array<UserData>>([]);
+
+  const { gameId } = useParams<{ gameId: string }>();
+
+  useEffect(() => {
+    socket.emit("getUsers", gameId);
+  }, [gameId]);
 
   useEffect(() => {
     socket.on("chat", (data: { id: string; message: string }) => {
       setChats([...chats, new ChatMessage(data.id, data.message)]);
     });
 
-    socket.on("users", (serverUsers: Array<UserData>) => {
+    socket.on("setUsers", (serverUsers: Array<UserData>) => {
       setUsers(serverUsers);
-    });
-
-    socket.on("startRound", (data: { type: string; word: string }) => {
-      setIsGuesser(data.type == "guesser");
-    });
-
-    socket.on("userComplete", (username: string, id: string) => {
-      users.forEach((it) => {
-        if (it.userName == username) {
-          it.resetRound();
-        }
-      });
-
-      if (socket.id == id) {
-        setUserGuessed(true);
-      }
     });
 
     return () => {
       socket.off("chat");
       socket.off("users");
-      socket.off("userComplete");
     };
   });
 
-  const submitGuess = (e: any) => {
+  const submitGuess = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     e.preventDefault();
     socket.emit("chat", chatMessage);
     setChatMessage("");
@@ -83,21 +72,23 @@ export default function ChatComponent() {
 
   return (
     <div>
-      {users.map((user: UserData, index: any) => (
-        <Card
-          className={classes.marginAndPadding}
-          variant="outlined"
-          key={index}
-        >
-          <User
-            userName={user.userName}
-            lastGuess={user.lastGuess}
-            score={user.score}
-            guessedCorrect={user.guessed}
+      <>
+        {users.map((user: UserData, index: number) => (
+          <Card
+            className={classes.marginAndPadding}
+            variant="outlined"
             key={index}
-          />
-        </Card>
-      ))}
+          >
+            <User
+              userName={user.username}
+              lastGuess={user.lastGuess}
+              score={user.score}
+              guessedCorrect={user.guessed}
+              key={index}
+            />
+          </Card>
+        ))}
+      </>
 
       <Card className={classes.chatContainer} variant="outlined">
         <form className="chat-form">
@@ -108,11 +99,6 @@ export default function ChatComponent() {
             label="Guess"
             value={chatMessage}
             onChange={(e) => setChatMessage(e.target.value)}
-            onKeyPress={(ev) => {
-              if (ev.key === "Enter" && !(userGuessed || !isGuesser)) {
-                submitGuess(ev);
-              }
-            }}
           />
           <Button
             className="chat-submit"

@@ -1,26 +1,31 @@
 export default class UserData {
-  userName: String;
-  lastGuess: String;
+  userId: string
+  username: string;
+  lastGuess: string;
   score: number;
   guessed: boolean;
   isGuesser: boolean;
 
-  constructor(userName: String) {
-    this.userName = userName;
-    this.lastGuess = "";
+  constructor(userId: string, username: string) {
+    this.userId = userId
+    this.username = username;
     this.score = 0;
-    this.guessed = false;
-    this.isGuesser = false;
-  }
 
-  resetRound() {
     this.lastGuess = "";
     this.guessed = false;
     this.isGuesser = false;
   }
 
-  incrementScore(gain: number) {
-    this.score += gain;
+  resetUser(isGuesser: boolean) {
+    this.lastGuess = ""
+    this.isGuesser = isGuesser;
+    this.guessed = !isGuesser
+  }
+
+  setGuessed(time: number) {
+    this.score += time;
+    this.guessed = true;
+    this.lastGuess = ""
   }
 
   resetScore() {

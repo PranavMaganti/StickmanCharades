@@ -1,3 +1,8 @@
 {
+<<<<<<< HEAD
     "plugins": ["@babel/plugin-transform-typescript"]
 }
+=======
+  "plugins": ["@babel/plugin-transform-typescript"]
+}
+>>>>>>> ba145c5d294ba32f885ed3296ac2d72b7cc3d2f0

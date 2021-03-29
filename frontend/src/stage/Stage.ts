@@ -8,25 +8,25 @@ export default class Stage {
     this.members = [];
   }
 
-  addSprite(sprite: Sprite) {
+  addSprite(sprite: Sprite): void {
     this.members.push(sprite);
   }
 
   static generateStickman(x: number, y: number, length: number): Sprite {
-    let root = new Sprite(x, y);
+    const root = new Sprite(x, y);
 
-    let chest = root.addChild(0, length);
-    let neck = chest.addChild(0, length);
+    const chest = root.addChild(0, length);
+    const neck = chest.addChild(0, length);
     neck.addChild(0, length, Shape.Circle); // head
 
-    let elbowL = neck.addChild(225, length);
-    let elbowR = neck.addChild(135, length);
+    const elbowL = neck.addChild(225, length);
+    const elbowR = neck.addChild(135, length);
 
     elbowL.addChild(-10, length); // hand left
     elbowR.addChild(10, length); // hand right
 
-    let kneeL = root.addChild(200, length);
-    let kneeR = root.addChild(160, length);
+    const kneeL = root.addChild(200, length);
+    const kneeR = root.addChild(160, length);
 
     kneeL.addChild(0, length); // foot left
     kneeR.addChild(0, length); // foot right

@@ -2,14 +2,15 @@ import React, { useEffect } from "react";
 import Sketch from "react-p5";
 import p5Types from "p5";
 import { useMemo } from "react";
-import Stage from "./stage/Stage";
-import { SpriteNode } from "./stage/SpriteNode";
-import { Sprite } from "./stage/Sprite";
+import Stage from "../stage/Stage";
+import { SpriteNode } from "../stage/SpriteNode";
+import { Sprite } from "../stage/Sprite";
 import { useState } from "react";
-import { IPoint } from "./stage/IPoint";
-import { Shape } from "./stage/Shape";
-import socket from "./socket";
+import { IPoint } from "../stage/IPoint";
+import { Shape } from "../stage/Shape";
+import socket from "../socket";
 import { Button, Typography } from "@material-ui/core";
+import { useParams } from "react-router-dom";
 
 class Point {
   x: number;
@@ -23,12 +24,7 @@ class Point {
 
 const STICKMAN_LENGTH = 60;
 
-function drawSprite(
-  p5: p5Types,
-  x: number,
-  y: number,
-  color: string = "#FF0000"
-) {
+function drawSprite(p5: p5Types, x: number, y: number, color = "#FF0000") {
   p5.push();
   p5.strokeWeight(2);
   p5.fill(color);
@@ -94,8 +90,9 @@ function getClosestSprite(
   return closestNode;
 }
 
-export default function StickmanComponent() {
+export default function StickmanComponent(): React.ReactElement {
   const [canvasSize, setCanvasSize] = useState({ width: 16, height: 9 });
+  const { gameId } = useParams<{ gameId: string }>();
 
   const center = useMemo<Point>(
     () => new Point(canvasSize.width / 2, canvasSize.height / 2),
@@ -106,15 +103,14 @@ export default function StickmanComponent() {
     Stage.generateStickman(center.x, center.y, STICKMAN_LENGTH)
   );
   const [selectedNode, setSelectedNode] = useState<IPoint>();
-  const [wordHint, setWordHint] = useState("Room Code: W3z90");
-  const [isGuesser, setIsGuesser] = useState(true);
+  const [wordHint, setWordHint] = useState("Room Code: " + gameId);
 
   useEffect(() => {
     socket.on(
       "stickmanReceiveMove",
       (data: { message: string; id: string }) => {
-        const sprite: Sprite = Sprite.fromJson(data.message);
         if (socket.id != data.id) {
+          const sprite: Sprite = Sprite.fromJson(data.message);
           setStickmanSprite(sprite);
         }
       }
@@ -124,7 +120,6 @@ export default function StickmanComponent() {
       setStickmanSprite(
         Stage.generateStickman(center.x, center.y, STICKMAN_LENGTH)
       );
-      setIsGuesser(data.type == "guesser");
       setWordHint(data.word);
     });
 
@@ -135,13 +130,16 @@ export default function StickmanComponent() {
   });
 
   const onClick = (p5: p5Types) => {
-    let closestChild = getClosestSprite(
+    const closestChild = getClosestSprite(
       p5.mouseX,
       p5.mouseY,
       stickmanSprite.sprites
     );
-    let closestDist = closestChild.getSquaredDistanceFrom(p5.mouseX, p5.mouseY);
-    let parentDist = stickmanSprite.getSquaredDistanceFrom(
+    const closestDist = closestChild.getSquaredDistanceFrom(
+      p5.mouseX,
+      p5.mouseY
+    );
+    const parentDist = stickmanSprite.getSquaredDistanceFrom(
       p5.mouseX,
       p5.mouseY
     );
@@ -208,7 +206,7 @@ export default function StickmanComponent() {
   };
 
   const resetSprite = () => {
-    let newMan = Stage.generateStickman(center.x, center.y, STICKMAN_LENGTH);
+    const newMan = Stage.generateStickman(center.x, center.y, STICKMAN_LENGTH);
     setStickmanSprite(newMan);
     socket.emit("stickmanEmitMove", newMan.toJson());
   };
@@ -231,8 +229,8 @@ export default function StickmanComponent() {
         setup={setup}
         draw={draw}
         windowResized={windowResized}
-        mouseDragged={!isGuesser ? onDrag : () => {}}
-        mousePressed={!isGuesser ? onClick : () => {}}
+        mouseDragged={onDrag}
+        mousePressed={onClick}
       />
     </div>
   );

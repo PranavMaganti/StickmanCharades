@@ -31,19 +31,32 @@ const useStyles = makeStyles({
   },
 });
 
-export default function MainPage() {
-  const [userName, setUserName] = useState("");
+export default function MainPage(): React.ReactElement {
+  const [username, setUserName] = useState("");
   const [roomCode, setRoomCode] = useState("");
+
   const [validUsername, setValidUsername] = useState(true);
+  const [validRoomCode, setValidRoomCode] = useState(true);
+
   const history = useHistory();
   const classes = useStyles();
+
   useEffect(() => {
-    socket.on("joinRoom", (arg: { canJoin: boolean }) => {
-      if (arg.canJoin) {
-        history.push("/play");
-      } else {
-        setValidUsername(false);
+    socket.on(
+      "joinRoom",
+      (arg: { usernameValid: boolean; roomId: string; roomValid: boolean }) => {
+        if (!arg.roomValid) {
+          setValidRoomCode(false);
+        } else if (!arg.usernameValid) {
+          setValidUsername(false);
+        } else {
+          history.push("/play/" + arg.roomId);
+        }
       }
+    );
+
+    socket.on("createRoomSuccess", (roomId: string) => {
+      history.push("/play/" + roomId);
     });
   });
 
@@ -63,15 +76,23 @@ export default function MainPage() {
               }
               defaultValue="PlayerX"
               label="Nickname"
-              value={userName}
-              onChange={(e) => setUserName(e.target.value)}
+              value={username}
+              onChange={(e) => {
+                setUserName(e.target.value);
+                setValidUsername(true);
+              }}
             />
 
             <TextField
               className={classes.bothMargin}
+              error={!validRoomCode}
+              helperText={!validRoomCode ? "This is not a valid room code" : ""}
               label="Room Code"
               value={roomCode}
-              onChange={(e) => setRoomCode(e.target.value)}
+              onChange={(e) => {
+                setRoomCode(e.target.value);
+                setValidRoomCode(true);
+              }}
             />
 
             <Button
@@ -79,10 +100,12 @@ export default function MainPage() {
               variant="contained"
               color="secondary"
               onClick={() => {
-                if (userName != "") {
-                  socket.emit("requestJoinRoom", userName);
-                }
+                socket.emit("requestJoinRoom", {
+                  roomId: roomCode,
+                  username: username,
+                });
               }}
+              disabled={username == ""}
             >
               Join Game
             </Button>
@@ -92,10 +115,10 @@ export default function MainPage() {
               variant="contained"
               color="secondary"
               onClick={() => {
-                if (userName != "") {
-                  socket.emit("requestJoinRoom", userName);
-                }
+                console.log("Creating room");
+                socket.emit("createRoom", username);
               }}
+              disabled={username == ""}
             >
               Or start a new room!
             </Button>
