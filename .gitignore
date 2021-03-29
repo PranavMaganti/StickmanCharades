@@ -1,3 +1,4 @@
 ﻿# vim swap files
 *.swp
 yarn.lock
+node_modules/
