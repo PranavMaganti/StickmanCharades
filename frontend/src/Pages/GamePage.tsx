@@ -28,11 +28,15 @@ export default function GamePage() {
   const classes = useStyles();
 
   return (
-    <div className="flex-row">
-      <Card className={classes.allMargin} variant="outlined">
+    <div className="play-area">
+      <Card
+        className={[classes.allMargin, "fixed-aspect"].join(" ")}
+        variant="outlined"
+        id="stickman-container"
+      >
         <StickmanComponent />
       </Card>
-      <div>
+      <div id="chat-container">
         <ChatComponent />
       </div>
     </div>

@@ -22,8 +22,6 @@ class Point {
 }
 
 const STICKMAN_LENGTH = 60;
-const CANVAS_WIDTH = 1000;
-const CANVAS_HEIGHT = 1000;
 
 function drawSprite(
   p5: p5Types,
@@ -97,9 +95,11 @@ function getClosestSprite(
 }
 
 export default function StickmanComponent() {
+  const [canvasSize, setCanvasSize] = useState({ width: 16, height: 9 });
+
   const center = useMemo<Point>(
-    () => new Point(CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2),
-    []
+    () => new Point(canvasSize.width / 2, canvasSize.height / 2),
+    [canvasSize]
   );
 
   const [stickmanSprite, setStickmanSprite] = useState(
@@ -174,8 +174,20 @@ export default function StickmanComponent() {
     }
   };
 
+  const updateCanvasSize = () => {
+    let parent = document.getElementById("stickman-container");
+    let newWidth = parent != null ? parent.clientWidth : 0;
+    let newHeight = newWidth * (9 / 16);
+    setCanvasSize({
+      width: newWidth,
+      height: newHeight,
+    });
+    return [newWidth, newHeight];
+  };
+
   const setup = (p5: p5Types, canvasParentRef: Element) => {
-    p5.createCanvas(CANVAS_WIDTH, CANVAS_HEIGHT).parent(canvasParentRef);
+    const [width, height] = updateCanvasSize();
+    p5.createCanvas(width, height).parent(canvasParentRef);
   };
 
   const draw = (p5: p5Types) => {
@@ -188,6 +200,11 @@ export default function StickmanComponent() {
     );
 
     drawSprite(p5, stickmanSprite.getX(), stickmanSprite.getY(), "#FFA500");
+  };
+
+  const windowResized = (p5: p5Types) => {
+    updateCanvasSize();
+    p5.resizeCanvas(canvasSize.width, canvasSize.height);
   };
 
   const resetSprite = () => {
@@ -213,6 +230,7 @@ export default function StickmanComponent() {
       <Sketch
         setup={setup}
         draw={draw}
+        windowResized={windowResized}
         mouseDragged={!isGuesser ? onDrag : () => {}}
         mousePressed={!isGuesser ? onClick : () => {}}
       />
