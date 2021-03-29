@@ -1,9 +1,9 @@
 import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { Card } from "@material-ui/core";
-import ChatComponent from "../ChatComponent";
+import ChatComponent from "../components/ChatComponent";
 import "../index.css";
-import StickmanComponent from "../StickmanComponent";
+import StickmanComponent from "../components/StickmanComponent";
 
 const useStyles = makeStyles({
   topMargin: {

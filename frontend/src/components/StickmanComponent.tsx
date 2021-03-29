@@ -2,14 +2,15 @@ import React, { useEffect } from "react";
 import Sketch from "react-p5";
 import p5Types from "p5";
 import { useMemo } from "react";
-import Stage from "./stage/Stage";
-import { SpriteNode } from "./stage/SpriteNode";
-import { Sprite } from "./stage/Sprite";
+import Stage from "../stage/Stage";
+import { SpriteNode } from "../stage/SpriteNode";
+import { Sprite } from "../stage/Sprite";
 import { useState } from "react";
-import { IPoint } from "./stage/IPoint";
-import { Shape } from "./stage/Shape";
-import socket from "./socket";
+import { IPoint } from "../stage/IPoint";
+import { Shape } from "../stage/Shape";
+import socket from "../socket";
 import { Button, Typography } from "@material-ui/core";
+import { useParams } from "react-router-dom";
 
 class Point {
   x: number;
@@ -97,6 +98,8 @@ function getClosestSprite(
 }
 
 export default function StickmanComponent() {
+  const { gameId } = useParams<{ gameId: string }>();
+
   const center = useMemo<Point>(
     () => new Point(CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2),
     []
@@ -106,8 +109,7 @@ export default function StickmanComponent() {
     Stage.generateStickman(center.x, center.y, STICKMAN_LENGTH)
   );
   const [selectedNode, setSelectedNode] = useState<IPoint>();
-  const [wordHint, setWordHint] = useState("Room Code: W3z90");
-  const [isGuesser, setIsGuesser] = useState(true);
+  const [wordHint, setWordHint] = useState("Room Code: " + gameId);
 
   useEffect(() => {
     socket.on(
@@ -124,7 +126,6 @@ export default function StickmanComponent() {
       setStickmanSprite(
         Stage.generateStickman(center.x, center.y, STICKMAN_LENGTH)
       );
-      setIsGuesser(data.type == "guesser");
       setWordHint(data.word);
     });
 
@@ -213,8 +214,8 @@ export default function StickmanComponent() {
       <Sketch
         setup={setup}
         draw={draw}
-        mouseDragged={!isGuesser ? onDrag : () => {}}
-        mousePressed={!isGuesser ? onClick : () => {}}
+        mouseDragged={onDrag}
+        mousePressed={onClick}
       />
     </div>
   );
