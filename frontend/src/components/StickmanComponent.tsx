@@ -93,7 +93,7 @@ function getClosestSprite(
 
 export default function StickmanComponent(): React.ReactElement {
   const [canvasSize, setCanvasSize] = useState({ width: 16, height: 9 });
-  const { gameId } = useParams<{ gameId: string }>();
+  const { gameId } = useParams();
 
   const center = useMemo<Point>(
     () => new Point(canvasSize.width / 2, canvasSize.height / 2),

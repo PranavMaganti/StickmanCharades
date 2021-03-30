@@ -50,7 +50,7 @@ export default function ChatComponent(): React.ReactElement {
   const [users, setUsers] = useState<Array<UserData>>([]);
   const [user, setUser] = useState<UserData>();
 
-  const { gameId } = useParams<{ gameId: string }>();
+  const { gameId } = useParams();
 
   useEffect(() => {
     socket.emit("getUsers", gameId);

@@ -58,3 +58,13 @@ export function createRoomListener(
     socket.emit(SocketSendLabel.CreateRoom, newGameId);
   });
 }
+
+
+export function isInRoomListener(socket: Socket, userGameMap: Map<string, GameState>, games: Map<string, GameState>) {
+  socket.on(SocketReceiveLabel.CheckHasRoom, (gameId) => {
+    socket.emit(SocketSendLabel.CheckHasRoom, {
+      isValidGame: games.has(gameId),
+      hasUsername: userGameMap.has(socket.id)
+    })
+  }) 
+}

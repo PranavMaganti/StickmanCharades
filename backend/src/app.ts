@@ -5,7 +5,11 @@ import { GameState } from "./GameState";
 import { SocketReceiveLabel, SocketSendLabel } from "./SocketEndpoints";
 import chatListener from "./listeners/Chat";
 import disconnectListener from "./listeners/Disconnect";
-import { createRoomListener, joinRoomListener } from "./listeners/Room";
+import {
+  createRoomListener,
+  isInRoomListener,
+  joinRoomListener,
+} from "./listeners/Room";
 import { stickmanMoveListener } from "./listeners/Stickman";
 import { getUsersListener } from "./listeners/Users";
 import { startGameListener } from "./listeners/Game";
@@ -48,6 +52,7 @@ io.on(SocketReceiveLabel.Connect, (socket: Socket) => {
 
   joinRoomListener(socket, userGameMap, games);
   createRoomListener(socket, io, userGameMap, games);
+  isInRoomListener(socket, userGameMap, games);
 
   stickmanMoveListener(socket, io, userGameMap);
   chatListener(socket, io, userGameMap);

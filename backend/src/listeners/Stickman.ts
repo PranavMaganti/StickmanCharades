@@ -8,12 +8,14 @@ export function stickmanMoveListener(
   idGameMap: Map<string, GameState>
 ) {
   socket.on(SocketReceiveLabel.StickmanMove, (message) => {
-    io.to(idGameMap.get(socket.id)!!.gameId).emit(
-      SocketSendLabel.StickmanMove,
-      {
-        message: message,
-        id: socket.id,
-      }
-    );
+    if (idGameMap.has(socket.id)) {
+      io.to(idGameMap.get(socket.id)!!.gameId).emit(
+        SocketSendLabel.StickmanMove,
+        {
+          message: message,
+          id: socket.id,
+        }
+      );
+    }
   });
 }

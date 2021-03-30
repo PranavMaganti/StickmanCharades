@@ -3,6 +3,7 @@ export class SocketReceiveLabel {
 
   static JoinRoom = "requestJoinRoom"
   static CreateRoom = "createRoom"
+  static CheckHasRoom = "checkHasRoom"
 
   static Connect = "connection"
   static Disconnect = "disconnect"
@@ -15,6 +16,7 @@ export class SocketReceiveLabel {
 export class SocketSendLabel {
   static CreateRoom = "createRoomSuccess"
   static Chat = "chat"
+  static CheckHasRoom = "checkHasRoom"
 
   static EndGame = "endGame";
   static StartGame = "startGame";

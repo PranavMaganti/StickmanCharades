@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import {
   Container,
   TextField,
@@ -31,14 +31,18 @@ const useStyles = makeStyles({
   },
 });
 
-export default function MainPage(): React.ReactElement {
+export default function MainPage(prop: {
+  gameId: string | undefined;
+}): React.ReactElement {
   const [username, setUserName] = useState("");
-  const [roomCode, setRoomCode] = useState("");
+  const [roomCode, setRoomCode] = useState(
+    prop.gameId == undefined ? "" : prop.gameId
+  );
 
   const [validUsername, setValidUsername] = useState(true);
   const [validRoomCode, setValidRoomCode] = useState(true);
 
-  const history = useHistory();
+  const navigate = useNavigate();
   const classes = useStyles();
 
   useEffect(() => {
@@ -50,13 +54,13 @@ export default function MainPage(): React.ReactElement {
         } else if (!arg.usernameValid) {
           setValidUsername(false);
         } else {
-          history.push("/play/" + arg.roomId);
+          navigate("/play/" + arg.roomId, { state: { allValid: true } });
         }
       }
     );
 
     socket.on("createRoomSuccess", (roomId: string) => {
-      history.push("/play/" + roomId);
+      navigate("/play/" + roomId, { state: { allValid: true } });
     });
   });
 
@@ -93,6 +97,7 @@ export default function MainPage(): React.ReactElement {
                 setRoomCode(e.target.value);
                 setValidRoomCode(true);
               }}
+              disabled={prop.gameId != undefined}
             />
 
             <Button
@@ -110,18 +115,20 @@ export default function MainPage(): React.ReactElement {
               Join Game
             </Button>
 
-            <Button
-              className={classes.bothMargin}
-              variant="contained"
-              color="secondary"
-              onClick={() => {
-                console.log("Creating room");
-                socket.emit("createRoom", username);
-              }}
-              disabled={username == ""}
-            >
-              Or start a new room!
-            </Button>
+            {prop.gameId == undefined && (
+              <Button
+                className={classes.bothMargin}
+                variant="contained"
+                color="secondary"
+                onClick={() => {
+                  console.log("Creating room");
+                  socket.emit("createRoom", username);
+                }}
+                disabled={username == ""}
+              >
+                Or start a new room!
+              </Button>
+            )}
           </form>
         </Container>
       </Card>

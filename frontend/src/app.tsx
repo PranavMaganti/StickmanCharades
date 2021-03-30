@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
-import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
-import GamePage from "./Pages/GamePage";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import LoadingGamePage from "./Pages/LoadingGamePage";
 import MainPage from "./Pages/MainPage";
 
 export default function App(): React.ReactElement {
@@ -12,14 +12,14 @@ export default function App(): React.ReactElement {
     <Router>
       {/* A <Switch> looks through its children <Route>s and
             renders the first one that matches the current URL. */}
-      <Switch>
+      <Routes>
         <Route path="/play/:gameId">
-          <GamePage />
+          <LoadingGamePage />
         </Route>
         <Route path="/">
-          <MainPage />
+          <MainPage gameId={undefined} />
         </Route>
-      </Switch>
+      </Routes>
     </Router>
   );
 }
