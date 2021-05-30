@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "target": "esnext",
+    "types": ["node"],
     "module": "commonjs",
     "lib": [
       "dom",
@@ -18,7 +19,7 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
-    "jsx": "react-jsx"
+    "jsx": "react-jsx",
   },
   "include": [
     "src"
